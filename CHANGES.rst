@@ -19,7 +19,7 @@ tasks:
 0.1.1
 ----------
 development
-    - development
+    - only one message per imported secret for travis
 
 
 0.1.0

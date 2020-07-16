@@ -467,16 +467,20 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             self.pizza_cutter_patterns['{{PizzaCutter.travis.secrets}}'] = ''
             return
 
-        path_secret_files = path_secrets.glob('*.secret.txt')
-        l_secrets: List[str] = list()
-        for path_secret_file in path_secret_files:
-            env_var_name = path_secret_file.stem
-            encrypted_secret = path_secret_file.read_text().strip()
-            str_secret = str_secure.format(encrypted_secret=encrypted_secret, comment=env_var_name)
-            l_secrets.append(str_secret)
-            logger.info('encrypted environment variable "{env_var_name}" was added to travis.yml'.format(env_var_name=env_var_name))
+        if '{{PizzaCutter.travis.secrets}}' in self.pizza_cutter_patterns:
+            # we imported it already before
+            return
+        else:
+            path_secret_files = path_secrets.glob('*.secret.txt')
+            l_secrets: List[str] = list()
+            for path_secret_file in path_secret_files:
+                env_var_name = path_secret_file.stem
+                encrypted_secret = path_secret_file.read_text().strip()
+                str_secret = str_secure.format(encrypted_secret=encrypted_secret, comment=env_var_name)
+                l_secrets.append(str_secret)
+                logger.info('encrypted environment variable "{env_var_name}" was added to travis.yml'.format(env_var_name=env_var_name))
 
-        self.pizza_cutter_patterns['{{PizzaCutter.travis.secrets}}'] = '\n'.join(l_secrets)
+            self.pizza_cutter_patterns['{{PizzaCutter.travis.secrets}}'] = '\n'.join(l_secrets)
 
     # ############################################################################
     # .travis Linux Matrix settings
