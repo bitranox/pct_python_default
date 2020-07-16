@@ -1,0 +1,9 @@
+# STDLIB
+
+
+def main() -> None:
+    print('Hello World - by PizzaCutter')
+
+
+if __name__ == '__main__':
+    print('this is a library only, the executable is named "{{PizzaCutter.cli_module}}.py"')

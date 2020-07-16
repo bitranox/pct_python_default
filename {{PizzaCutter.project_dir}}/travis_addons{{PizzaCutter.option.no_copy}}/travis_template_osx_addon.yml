@@ -1,0 +1,10 @@
+    - os: osx
+      language: sh
+      name: "macOS 10.15.4"
+      python: "3.8"
+      osx_image: xcode11.5
+      env:
+        # on osx pip and python points to python 2.7 - therefore we have to use pip3 and python3 here
+        - cPREFIX=""				# prefix before commands - used for wine, there the prefix is "wine"
+        - cPYTHON="python3"			# command to launch python interpreter (its different on macOs, there we need python3)
+        - cPIP="python3 -m pip"   	# command to launch pip (its different on macOs, there we need pip3)
