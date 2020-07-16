@@ -15,6 +15,13 @@ tasks:
     - arm64
     - build test project
 
+
+0.1.1
+----------
+development
+    - development
+
+
 0.1.0
 ----------
 2020-07-16 : initial public release
