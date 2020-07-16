@@ -20,7 +20,7 @@ tasks:
 ----------
 development
     - only one message per imported secret for travis
-
+    - bump code coverage
 
 0.1.0
 ----------
