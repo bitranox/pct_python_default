@@ -43,11 +43,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         # ### Project Settings
         # the name of the project, for instance for the travis repo slug
-        self.project_name = 'PizzaCutterDefaultTestProject'
+        self.project_name = 'pct_python_default_test'
         # the project directory name (under the PizzaCutter Target folder)
         self.project_dir = self.project_name
         # the name of the package - usually it is used for cli command, package directory, etc
-        self.package_name = 'pizzacutter_default_test_project'
+        self.package_name = 'pct_python_default_test'
         # a short description of the Package - especially if You deploy on PyPi !
         self.short_description = 'a pizzacutter default test project, crated with PizzaCutter and the PizzaCutter default python template'
 
@@ -74,12 +74,16 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.do_code_coverage_codecov = True
         # additional args for mypy and pycodestyle when running pytest setup.py test, etc.
         # set in conftest.py - usually You dont need to add anything here
-        self.pytest_mypy_args: List[str] = list()           # only append or delete from this list in inherited configs
-        self.pytest_pycodestyle_args: List[str] = list()    # only append or delete from this list in inherited configs
+        # only append or delete from this list in inherited configs
+        self.pytest_mypy_args: List[str] = list()
+        # only append or delete from this list in inherited configs
+        self.pytest_pycodestyle_args: List[str] = list()
         # ### additional args for mypy and pycodestyle when running pytest setup.py test, etc.
         # ### set in conftest.py - usually You dont need to add anything here
-        # self.pytest_mypy_args.append('--example')         # only append or delete from this list in inherited configs
-        # self.pytest_pycodestyle_args.append('--example')  # only append or delete from this list in inherited configs
+        # only append or delete from this list in inherited configs
+        # self.pytest_mypy_args.append('--example')
+        # only append or delete from this list in inherited configs
+        # self.pytest_pycodestyle_args.append('--example')
 
         # to upload code climate code coverage, You need to create the secret CC_TEST_REPORTER_ID
         self.do_code_coverage_code_climate = True
@@ -121,14 +125,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # only append or delete from this list in inherited configs
         self.testscript_additional_mypy_root_paths: List[pathlib.Path] = list()
 
-        # 3rd party stub files are usually put into a "stub" folder. But if You import modules from other local packages
-        # in mypy, those stub folders also needs to be in the mypy path. We can autodiscover those directories
-        # and add them to the mypy path.
-        # the names of stub directories. the default is : '3rd_party_stubs'
-        # You need to take care that the same stub file is not found multiple times by mypy !
-        self.testscript_mypy_auto_discover_stub_directories_root: str = ''
-        self.testscript_mypy_auto_discover_stub_directories: List[str] = list()
-
         # ### Travis Tests
         # Travis Linux Version 'bionic', 'xenial', 'trusty', 'precise'
         self.travis_python_version = 'bionic'
@@ -145,7 +141,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # only valid if self.is_pypi_package = True
         # You must only state ONE python version which is used to deploy in the matrix,
         # otherwise You would deploy multiple times !
-        self.deploy_on_pypi_on_python_versions: List[str] = ['3.8']
+        self.deploy_to_pypi_on_python_versions: List[str] = ['3.8']
 
         # travis secrets (encrypted environment variables) are stored in project_dir/travis_secrets/secrets/ and will be loaded
         # by PizzaCutter automatically into the travis.yml.
@@ -501,14 +497,14 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
 """
 
-            if len(self.deploy_on_pypi_on_python_versions) > 1:
+            if len(self.deploy_to_pypi_on_python_versions) > 1:
                 raise ValueError('You must only deploy on PyPi on ONE Python Version, otherwise You would deploy multiple times')
 
             l_travis_linux_versions: List[str] = list()
             for version in self.travis_linux_python_versions:
                 mypy_strict_typecheck = (version in self.mypy_strict_typecheck_on_python_versions) and self.do_pytest_mypy_tests
                 build_docs = version in self.build_docs_on_python_versions
-                deploy_on_pypi = (version in self.deploy_on_pypi_on_python_versions) and self.is_pypi_package
+                deploy_on_pypi = (version in self.deploy_to_pypi_on_python_versions) and self.is_pypi_package
                 l_travis_linux_versions.append(travis_matrix_linux.format(
                     version=version, mypy_strict_typecheck=mypy_strict_typecheck, build_docs=build_docs, deploy_on_pypi=deploy_on_pypi))
             self.pizza_cutter_patterns['{{PizzaCutter.travis.linux.tests}}'] = ''.join(l_travis_linux_versions)
