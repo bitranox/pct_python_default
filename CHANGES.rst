@@ -12,8 +12,4 @@ tasks:
 
 0.1.0
 ----------
-2020-??-?? : initial public release
-    - fix setup.py for deploy on pypi
-    - fix travis for pypi deploy testing
-    - mypy --no-warn-unused-ignores in travis (this should be tested locally)
-    - mypy.ini warn-unused-ignores = False (this should be tested locally)
+2020-07-16 : initial public release
