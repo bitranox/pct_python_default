@@ -706,6 +706,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             txt_result = subprocess_result.stdout.decode('utf-8').replace('\b ', '')
             # replace the executable filename with the registered shell command
             txt_result = txt_result.replace(path_cli_module.name, registered_shell_command)
+            if txt_result == '':
+                txt_result = 'can not get help - probably not a proper click application'
             path_cli_help_rst_file.write_text(txt_result)
             self.reformat_txt_file_to_rst_code_block(path_source_file=path_cli_help_rst_file, path_target_file=path_cli_help_rst_file)
         else:
