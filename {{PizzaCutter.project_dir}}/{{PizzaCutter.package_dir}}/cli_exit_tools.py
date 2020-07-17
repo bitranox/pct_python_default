@@ -16,11 +16,13 @@ def get_system_exit_code(exc: BaseException) -> int:
     If, on windows, the winerror is set on the Exception, we return that winerror code.
 
     >>> try:
-    ...     raise FileNotFoundError()
-    ... except FileNotFoundError as exc:
-    ...     assert get_system_exit_code(exc) == 2
+    ...     raise RuntimeError()
+    ... except RuntimeError as exc:
+    ...     assert get_system_exit_code(exc) == 1
     ...     setattr(exc, 'winerror', 42)
     ...     assert get_system_exit_code(exc) == 42
+    ...     setattr(exc, 'winerror', None)
+    ...     assert get_system_exit_code(exc) == 1
 
     """
 
@@ -46,7 +48,8 @@ def get_system_exit_code(exc: BaseException) -> int:
     for exception in exceptions:
         if isinstance(exc, exception):
             return exceptions[exception]
-    return 1
+    # this should never happen
+    return 1   # pragma: no cover
 
 
 def print_exception_message(trace_back: bool = config.traceback, stream: TextIO = sys.stderr) -> None:

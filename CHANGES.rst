@@ -15,6 +15,15 @@ tasks:
     - arm64
     - build test project
 
+
+0.1.1
+-----
+2020-07-17 : feature release
+    - improve message per imported secret for travis
+    - bump code coverage
+    - added PizzaCutter.date
+    - added version hint on top and internal hyperlink for changelog
+
 0.1.0
 ----------
 2020-07-16 : initial public release

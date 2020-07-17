@@ -362,6 +362,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.conf_file_name}}'] = self.pizza_cutter_path_conf_file.name
         # used in Licence
         self.pizza_cutter_patterns['{{PizzaCutter.current_year}}'] = str(datetime.datetime.now().year)
+        self.pizza_cutter_patterns['{{PizzaCutter.date}}'] = datetime.datetime.today().strftime('%Y-%m-%d')
 
         self.pizza_cutter_patterns['{{PizzaCutter.travis_windows_addon}}'] = ''
         self.pizza_cutter_patterns['{{PizzaCutter.travis_linux_addon}}'] = ''
@@ -474,9 +475,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             encrypted_secret = path_secret_file.read_text().strip()
             str_secret = str_secure.format(encrypted_secret=encrypted_secret, comment=env_var_name)
             l_secrets.append(str_secret)
-            logger.info('encrypted environment variable "{env_var_name}" was added to travis.yml'.format(env_var_name=env_var_name))
-
-        self.pizza_cutter_patterns['{{PizzaCutter.travis.secrets}}'] = '\n'.join(l_secrets)
+            self.pizza_cutter_patterns['{{PizzaCutter.travis.secrets}}'] = '\n'.join(l_secrets)
+            if not self.project_name.startswith('pct_python_default_'):
+                logger.info('Project {project}: set encrypted environment variable "{env_var_name}"'.format(
+                    project=self.project_name, env_var_name=env_var_name))
 
     # ############################################################################
     # .travis Linux Matrix settings

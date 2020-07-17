@@ -2,6 +2,11 @@
 
 
 def main() -> None:
+    """
+    >>> main()
+    Hello World - by PizzaCutter
+
+    """
     print('Hello World - by PizzaCutter')
 
 
