@@ -17,10 +17,12 @@ tasks:
 
 
 0.1.1
-----------
+-----
 development
-    - only one message per imported secret for travis
+    - improve message per imported secret for travis
     - bump code coverage
+    - added PizzaCutter.date
+    - added version hint on top and internal hyperlink for changelog
 
 0.1.0
 ----------

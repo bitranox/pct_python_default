@@ -21,6 +21,8 @@ def get_system_exit_code(exc: BaseException) -> int:
     ...     assert get_system_exit_code(exc) == 1
     ...     setattr(exc, 'winerror', 42)
     ...     assert get_system_exit_code(exc) == 42
+    ...     setattr(exc, 'winerror', None)
+    ...     assert get_system_exit_code(exc) == 1
 
     """
 
@@ -47,7 +49,7 @@ def get_system_exit_code(exc: BaseException) -> int:
         if isinstance(exc, exception):
             return exceptions[exception]
     # this should never happen
-    return 1   # pragma : no cover
+    return 1   # pragma: no cover
 
 
 def print_exception_message(trace_back: bool = config.traceback, stream: TextIO = sys.stderr) -> None:
