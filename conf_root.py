@@ -320,6 +320,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             # setup_zip_safe needs to be false for a typed project
             # noinspection PyRedeclaration
             self.setup_zip_safe = False
+        else:
+            # we need to remove otherwise !
+            remove_from_list(self.setup_included_files, 'py.typed')
+            remove_from_list(self.setup_included_files, '*.pyi')
+            remove_from_list(self.setup_included_files, '__init__.pyi')
 
         self.setup_package_data = {self.package_name: self.setup_included_files}
 
@@ -422,10 +427,16 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # pytest (conftest.py) test settings
         if self.do_pytest_mypy_tests:
             self.pytest_mypy_args.append('--mypy')
+        else:
+            remove_from_list(self.pytest_mypy_args, '--mypy')
+
         self.pizza_cutter_patterns['{{PizzaCutter.pytest_mypy_args}}'] = str(list(set(self.pytest_mypy_args)))
 
         if self.do_pytest_pep8_tests:
             self.pytest_pycodestyle_args.append('--pycodestyle')
+        else:
+            remove_from_list(self.pytest_pycodestyle_args, '--pycodestyle')
+
         self.pizza_cutter_patterns['{{PizzaCutter.pytest_pycodestyle_args}}'] = str(list(set(self.pytest_pycodestyle_args)))
 
     # ############################################################################
@@ -762,6 +773,15 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                 path_source_file.unlink()
             path_temp_file.rename(path_source_file)
 
+
+def remove_from_list(a_list, item) -> None:
+    """
+    remove an item from a list without error if it is not there
+    """
+    try:
+        a_list.remove(item)
+    except ValueError:
+        pass
 
 # #############################################################################################################################################################
 # CLI Interface
