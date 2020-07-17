@@ -18,7 +18,7 @@ tasks:
 
 0.1.1
 -----
-development
+2020-07-17 : feature release
     - improve message per imported secret for travis
     - bump code coverage
     - added PizzaCutter.date
