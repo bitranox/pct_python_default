@@ -1,4 +1,5 @@
 import sys
+import time
 import traceback
 from typing import Any, TextIO
 
@@ -141,3 +142,20 @@ def print_stderr(exc_info: Any) -> None:
         if exc_info.stderr is not None:
             assert isinstance(exc_info.stderr, bytes)
             print('STDERR: ' + exc_info.stderr.decode(encoding))
+
+
+def flush_streams() -> None:
+    """
+    flush the streams
+
+    >>> flush_streams()
+
+    """
+    try:
+        sys.stdout.flush()
+    except Exception:   # pragma: no cover
+        pass            # pragma: no cover
+    try:
+        sys.stderr.flush()
+    except Exception:   # pragma: no cover
+        pass            # pragma: no cover

@@ -51,3 +51,5 @@ if __name__ == '__main__':
     except Exception as exc:
         cli_exit_tools.print_exception_message()
         sys.exit(cli_exit_tools.get_system_exit_code(exc))
+    finally:
+        cli_exit_tools.flush_streams()
