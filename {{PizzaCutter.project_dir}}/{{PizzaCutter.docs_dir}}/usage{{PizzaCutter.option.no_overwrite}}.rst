@@ -1,4 +1,4 @@
-.. code-block::
-
-    import the module and check the code - its easy and documented there, including doctest examples.
-    in case of any questions the usage section might be expanded at a later time
+.. include:: ../{{PizzaCutter.package_dir}}/{{PizzaCutter.main_module_filename}}.py
+    :code: python
+    :start-after: # run_command{{{
+    :end-before: # run_command}}}

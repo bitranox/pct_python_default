@@ -17,8 +17,10 @@ tasks:
 
 0.1.2a
 ------
-2020-07-17 : development
+2020-07-23 : development
     - add STDOUT, STDERR to cli output on flag --traceback
+    - main file, error message "this is a library only..." to sys.stderr
+    - put example to include description from code, with nice format for pycharm help
 
 0.1.1
 -----
