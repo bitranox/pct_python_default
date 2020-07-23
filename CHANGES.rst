@@ -18,6 +18,7 @@ tasks:
 0.1.2a
 ------
 2020-07-17 : development
+    - add STDOUT, STDERR to cli output on flag --traceback
 
 0.1.1
 -----
