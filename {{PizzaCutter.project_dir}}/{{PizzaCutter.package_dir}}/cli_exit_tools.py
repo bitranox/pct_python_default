@@ -1,5 +1,4 @@
 import sys
-import time
 import traceback
 from typing import Any, TextIO
 
