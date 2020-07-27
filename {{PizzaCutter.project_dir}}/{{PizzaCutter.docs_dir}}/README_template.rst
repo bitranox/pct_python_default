@@ -26,10 +26,6 @@ Python version required: {{PizzaCutter.docs.python_required}} or newer
 
 {{PizzaCutter.try_in_jupyter}}
 
-Installation and Upgrade
-------------------------
-.. include:: ./installation.rst
-
 Usage
 -----------
 .. include:: ./usage{{PizzaCutter.option.no_overwrite}}.rst
@@ -37,6 +33,10 @@ Usage
 Usage from Commandline
 ------------------------
 .. include:: ./commandline_help.rst
+
+Installation and Upgrade
+------------------------
+.. include:: ./installation.rst
 
 Requirements
 ------------

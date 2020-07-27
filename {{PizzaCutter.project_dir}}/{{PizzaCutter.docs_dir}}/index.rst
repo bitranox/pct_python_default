@@ -1,7 +1,7 @@
 {{PizzaCutter.index_entry_jupyter}}{{PizzaCutter.option.delete_line_if_empty}}
-- `Installation and Upgrade`_
 - `Usage`_
 - `Usage from Commandline`_
+- `Installation and Upgrade`_
 - `Requirements`_
 - `Acknowledgements`_
 - `Contribute`_
