@@ -21,6 +21,7 @@ tasks:
     - add STDOUT, STDERR to cli output on flag --traceback
     - main file, error message "this is a library only..." to sys.stderr
     - put example to include description from code, with nice format for pycharm help
+    - make cli_exit_tools an external pypi module
 
 0.1.1
 -----
