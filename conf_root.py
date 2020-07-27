@@ -475,8 +475,9 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         str_secure = '        - secure: {encrypted_secret}  # {comment}'
         path_secrets = self.path_project_dir / 'travis_secrets/secrets'
 
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.secrets}}'] = ''
+
         if not path_secrets.exists():
-            self.pizza_cutter_patterns['{{PizzaCutter.travis.secrets}}'] = ''
             return
 
         path_secret_files = path_secrets.glob('*.secret.txt')
