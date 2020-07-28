@@ -136,7 +136,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # ### TRAVIS Linux Test Matrix
         self.travis_linux_python_versions = ['3.6', '3.7', '3.8', '3.8-dev', 'pypy3']
         # only valid if self.do_pytest_mypy_tests = True
-        self.mypy_strict_typecheck_on_python_versions: List[str] = ['3.6', '3.7', '3.8', '3.8-dev', 'pypy3']
+        self.mypy_strict_typecheck_on_python_versions: List[str] = ['3.6', '3.7', '3.8', '3.8-dev']
         self.build_docs_on_python_versions: List[str] = ['3.8']
         # only valid if self.is_pypi_package = True
         # You must only state ONE python version which is used to deploy in the matrix,
