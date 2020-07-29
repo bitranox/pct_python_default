@@ -18,7 +18,7 @@ tasks:
 0.1.3a0
 -------
 2020-07-29 : development
-
+    - delete wrong parameter pytest.ini --doctest-glob
 
 0.1.2
 ------
