@@ -33,7 +33,6 @@ def main() -> None:
     """
     # main}}}
 
-
     print('Hello World - by PizzaCutter')
 
 
