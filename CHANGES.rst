@@ -15,6 +15,10 @@ tasks:
     - arm64
     - build test project
 
+0.1.5a0
+-------
+2020-07-29 : development
+
 
 0.1.4
 -------
