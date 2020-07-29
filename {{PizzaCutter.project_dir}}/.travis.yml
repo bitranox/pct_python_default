@@ -13,6 +13,8 @@ env:
         - cPIP="python -m pip"
         # switch off wine fix me messages
         - WINEDEBUG=fixme-all
+        # mypy path
+        - MYPYPATH="./{{PizzaCutter.package_dir}}/3rd_party_stubs"
         # the registered CLI Command
         - CLI_COMMAND={{PizzaCutter.shell_command}}
         # the source file for rst_include (rebuild rst file includes)
