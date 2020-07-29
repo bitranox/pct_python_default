@@ -136,11 +136,12 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # ### TRAVIS Linux Test Matrix
         self.travis_linux_python_versions = ['3.6', '3.7', '3.8', '3.8-dev', 'pypy3']
         # only valid if self.do_pytest_mypy_tests = True
-        self.mypy_strict_typecheck_on_python_versions: List[str] = ['3.6', '3.7', '3.8', '3.8-dev', 'pypy3']
+        self.mypy_strict_typecheck_on_python_versions: List[str] = ['3.6', '3.7', '3.8', '3.8-dev']
         self.build_docs_on_python_versions: List[str] = ['3.8']
         # only valid if self.is_pypi_package = True
         # You must only state ONE python version which is used to deploy in the matrix,
         # otherwise You would deploy multiple times !
+        self.deploy_check_on_python_versions: List[str] = ['3.8']
         self.deploy_to_pypi_on_python_versions: List[str] = ['3.8']
 
         # travis secrets (encrypted environment variables) are stored in project_dir/travis_secrets/secrets/ and will be loaded
@@ -320,6 +321,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             # setup_zip_safe needs to be false for a typed project
             # noinspection PyRedeclaration
             self.setup_zip_safe = False
+        else:
+            # we need to remove otherwise !
+            remove_from_list(self.setup_included_files, 'py.typed')
+            remove_from_list(self.setup_included_files, '*.pyi')
+            remove_from_list(self.setup_included_files, '__init__.pyi')
 
         self.setup_package_data = {self.package_name: self.setup_included_files}
 
@@ -364,31 +370,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.current_year}}'] = str(datetime.datetime.now().year)
         self.pizza_cutter_patterns['{{PizzaCutter.date}}'] = datetime.datetime.today().strftime('%Y-%m-%d')
 
-        self.pizza_cutter_patterns['{{PizzaCutter.travis_windows_addon}}'] = ''
-        self.pizza_cutter_patterns['{{PizzaCutter.travis_linux_addon}}'] = ''
-        self.pizza_cutter_patterns['{{PizzaCutter.travis_pypy_addon}}'] = ''
-        self.pizza_cutter_patterns['{{PizzaCutter.travis_osx_addon}}'] = ''
-        self.pizza_cutter_patterns['{{PizzaCutter.travis_wine_addon}}'] = ''
-
-        if self.travis_windows_tests:
-            self.pizza_cutter_patterns['{{PizzaCutter.travis_windows_addon}}'] = \
-                (self.pizza_cutter_path_template_dir /
-                 '{{PizzaCutter.project_dir}}/travis_addons{{PizzaCutter.option.no_copy}}/travis_template_windows_addon.yml').read_text()
-
-        if self.travis_osx_tests:
-            self.pizza_cutter_patterns['{{PizzaCutter.travis_osx_addon}}'] = \
-                (self.pizza_cutter_path_template_dir /
-                 '{{PizzaCutter.project_dir}}/travis_addons{{PizzaCutter.option.no_copy}}/travis_template_osx_addon.yml').read_text()
-
-        if self.travis_wine_tests:
-            self.pizza_cutter_patterns['{{PizzaCutter.travis_wine_addon}}'] = \
-                (self.pizza_cutter_path_template_dir /
-                 '{{PizzaCutter.project_dir}}/travis_addons{{PizzaCutter.option.no_copy}}/travis_template_wine_addon.yml').read_text()
-
-        # travis rst_include (rebuild Readme File)
-        self.pizza_cutter_patterns['{{PizzaCutter.travis_readme_rst_template}}'] = './{}/README_template.rst'.format(self.docs_dir)
-        self.pizza_cutter_patterns['{{PizzaCutter.travis_readme_rst_target}}'] = './README.rst'
-
         if self.docs_badges_with_jupiter:
             self.pizza_cutter_patterns['{{PizzaCutter.|jupyter| }}'] = '|jupyter| '
             self.pizza_cutter_patterns['{{PizzaCutter.try_in_jupyter}}'] = '.. include:: ./try_in_jupyter.rst'
@@ -422,10 +403,16 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # pytest (conftest.py) test settings
         if self.do_pytest_mypy_tests:
             self.pytest_mypy_args.append('--mypy')
+        else:
+            remove_from_list(self.pytest_mypy_args, '--mypy')
+
         self.pizza_cutter_patterns['{{PizzaCutter.pytest_mypy_args}}'] = str(list(set(self.pytest_mypy_args)))
 
         if self.do_pytest_pep8_tests:
             self.pytest_pycodestyle_args.append('--pycodestyle')
+        else:
+            remove_from_list(self.pytest_pycodestyle_args, '--pycodestyle')
+
         self.pizza_cutter_patterns['{{PizzaCutter.pytest_pycodestyle_args}}'] = str(list(set(self.pytest_pycodestyle_args)))
 
     # ############################################################################
@@ -456,6 +443,30 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
     # ############################################################################
     def setup_travis(self):
         self.pizza_cutter_patterns['{{PizzaCutter.travis.linux_version}}'] = self.travis_python_version
+        self.pizza_cutter_patterns['{{PizzaCutter.travis_windows_addon}}'] = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.travis_linux_addon}}'] = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.travis_pypy_addon}}'] = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.travis_osx_addon}}'] = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.travis_wine_addon}}'] = ''
+
+        if self.travis_windows_tests:
+            self.pizza_cutter_patterns['{{PizzaCutter.travis_windows_addon}}'] = \
+                (self.pizza_cutter_path_template_dir /
+                 '{{PizzaCutter.project_dir}}/travis_addons{{PizzaCutter.option.no_copy}}/travis_template_windows_addon.yml').read_text()
+
+        if self.travis_osx_tests:
+            self.pizza_cutter_patterns['{{PizzaCutter.travis_osx_addon}}'] = \
+                (self.pizza_cutter_path_template_dir /
+                 '{{PizzaCutter.project_dir}}/travis_addons{{PizzaCutter.option.no_copy}}/travis_template_osx_addon.yml').read_text()
+
+        if self.travis_wine_tests:
+            self.pizza_cutter_patterns['{{PizzaCutter.travis_wine_addon}}'] = \
+                (self.pizza_cutter_path_template_dir /
+                 '{{PizzaCutter.project_dir}}/travis_addons{{PizzaCutter.option.no_copy}}/travis_template_wine_addon.yml').read_text()
+
+        # travis rst_include (rebuild Readme File)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.rst_include_source}}'] = './{}/README_template.rst'.format(self.docs_dir)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.rst_include_target}}'] = './README.rst'
 
     # ############################################################################
     # .travis.yml settings
@@ -464,8 +475,9 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         str_secure = '        - secure: {encrypted_secret}  # {comment}'
         path_secrets = self.path_project_dir / 'travis_secrets/secrets'
 
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.secrets}}'] = ''
+
         if not path_secrets.exists():
-            self.pizza_cutter_patterns['{{PizzaCutter.travis.secrets}}'] = ''
             return
 
         path_secret_files = path_secrets.glob('*.secret.txt')
@@ -493,9 +505,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
       language: python
       python: "{version}"
       before_install:
-          - export mypy_strict_typecheck="{mypy_strict_typecheck}"
-          - export build_docs="{build_docs}"
-          - export deploy_on_pypi="{deploy_on_pypi}"
+          - export MYPY_STRICT="{mypy_strict_typecheck}"
+          - export BUILD_DOCS="{build_docs}"
+          - export DEPLOY_CHECK="{deploy_check}"
+          - export DEPLOY="{deploy_on_pypi}"
 
 """
 
@@ -506,9 +519,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             for version in self.travis_linux_python_versions:
                 mypy_strict_typecheck = (version in self.mypy_strict_typecheck_on_python_versions) and self.do_pytest_mypy_tests
                 build_docs = version in self.build_docs_on_python_versions
+                deploy_check = (version in self.deploy_check_on_python_versions) and self.is_pypi_package
                 deploy_on_pypi = (version in self.deploy_to_pypi_on_python_versions) and self.is_pypi_package
                 l_travis_linux_versions.append(travis_matrix_linux.format(
-                    version=version, mypy_strict_typecheck=mypy_strict_typecheck, build_docs=build_docs, deploy_on_pypi=deploy_on_pypi))
+                    version=version, mypy_strict_typecheck=mypy_strict_typecheck,
+                    build_docs=build_docs, deploy_check=deploy_check, deploy_on_pypi=deploy_on_pypi))
             self.pizza_cutter_patterns['{{PizzaCutter.travis.linux.tests}}'] = ''.join(l_travis_linux_versions)
 
     # ############################################################################
@@ -695,6 +710,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             txt_result = subprocess_result.stdout.decode('utf-8').replace('\b ', '')
             # replace the executable filename with the registered shell command
             txt_result = txt_result.replace(path_cli_module.name, registered_shell_command)
+            if txt_result == '':
+                txt_result = 'can not get help - probably not a proper click application'
             path_cli_help_rst_file.write_text(txt_result)
             self.reformat_txt_file_to_rst_code_block(path_source_file=path_cli_help_rst_file, path_target_file=path_cli_help_rst_file)
         else:
@@ -762,6 +779,15 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                 path_source_file.unlink()
             path_temp_file.rename(path_source_file)
 
+
+def remove_from_list(a_list, item) -> None:
+    """
+    remove an item from a list without error if it is not there
+    """
+    try:
+        a_list.remove(item)
+    except ValueError:
+        pass
 
 # #############################################################################################################################################################
 # CLI Interface

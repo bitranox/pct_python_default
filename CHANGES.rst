@@ -15,6 +15,14 @@ tasks:
     - arm64
     - build test project
 
+0.1.2
+------
+2020-07-29 : feature release
+    - add STDOUT, STDERR to cli output on flag --traceback
+    - main file, error message "this is a library only..." to sys.stderr
+    - put example to include description from code, with nice format for pycharm help
+    - make cli_exit_tools an external pypi module
+    - new travis matrix, using lib_travis
 
 0.1.1
 -----
