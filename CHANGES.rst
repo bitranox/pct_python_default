@@ -15,9 +15,16 @@ tasks:
     - arm64
     - build test project
 
+
+0.1.4
+-------
+2020-07-29 : feature release
+    - put package name in travis env
+
+
 0.1.3
 -------
-2020-07-29 : development
+2020-07-29 : feature release
     - delete wrong parameter pytest.ini --doctest-glob
     - add MYPYPATH in travis.yml
     - add 3rd_party_stubs directory
