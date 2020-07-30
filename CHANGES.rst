@@ -7,35 +7,32 @@ Changelog
 
 please check `SemVer <https://semver.org/>`_ for more information on versioning
 
-tasks:
+todo:
     - github integration
-    - travis cleanup
-    - build against active github branch, not master
     - multiple bdists to pypi
     - arm64
-    - build test project
 
-0.1.5a0
+0.1.5
 -------
-2020-07-29 : development
-
+2020-07-30 : release
+    - add helper "find_version_number_in_file"
 
 0.1.4
 -------
-2020-07-29 : feature release
+2020-07-29 : release
     - put package name in travis env
 
 
 0.1.3
 -------
-2020-07-29 : feature release
+2020-07-29 : release
     - delete wrong parameter pytest.ini --doctest-glob
     - add MYPYPATH in travis.yml
     - add 3rd_party_stubs directory
 
 0.1.2
 ------
-2020-07-29 : feature release
+2020-07-29 : release
     - add STDOUT, STDERR to cli output on flag --traceback
     - main file, error message "this is a library only..." to sys.stderr
     - put example to include description from code, with nice format for pycharm help
@@ -44,7 +41,7 @@ tasks:
 
 0.1.1
 -----
-2020-07-17 : feature release
+2020-07-17 : release
     - improve message per imported secret for travis
     - bump code coverage
     - added PizzaCutter.date

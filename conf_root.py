@@ -7,6 +7,7 @@ import sys
 from typing import List, Dict, Optional
 
 from pizzacutter import PizzaCutterConfigBase
+from pizzacutter import find_version_number_in_file
 
 logger = logging.getLogger()
 FORMAT = '%(levelname)-8s %(message)s'
@@ -51,7 +52,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # a short description of the Package - especially if You deploy on PyPi !
         self.short_description = 'a pizzacutter default test project, crated with PizzaCutter and the PizzaCutter default python template'
 
-        self.version = '0.1.0'
+        # self.version = '0.1.0'
+        # this will be detected automatically from CHANGES.rst:
+        self.version = find_version_number_in_file(pizza_cutter_path_target_dir / self.project_dir / 'CHANGES.rst')
+
         self.author = 'put Your Name here'
         self.author_email = 'some_email_address@gmail.com'
         self.github_account = 'your_github_account'
