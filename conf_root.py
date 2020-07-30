@@ -145,8 +145,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # only valid if self.is_pypi_package = True
         # You must only state ONE python version which is used to deploy in the matrix,
         # otherwise You would deploy multiple times !
-        self.deploy_check_on_python_versions: List[str] = ['3.8']
-        self.deploy_to_pypi_on_python_versions: List[str] = ['3.8']
+        self.deploy_check_on_python_versions: List[str] = ['3.6', '3.7', '3.8', '3.8-dev', 'pypy3']
+        self.deploy_to_pypi_on_python_versions: List[str] = ['3.6', '3.7', '3.8', 'pypy3']
 
         # travis secrets (encrypted environment variables) are stored in project_dir/travis_secrets/secrets/ and will be loaded
         # by PizzaCutter automatically into the travis.yml.
@@ -515,10 +515,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
           - export DEPLOY="{deploy_on_pypi}"
 
 """
-
-            if len(self.deploy_to_pypi_on_python_versions) > 1:
-                raise ValueError('You must only deploy on PyPi on ONE Python Version, otherwise You would deploy multiple times')
-
             l_travis_linux_versions: List[str] = list()
             for version in self.travis_linux_python_versions:
                 mypy_strict_typecheck = (version in self.mypy_strict_typecheck_on_python_versions) and self.do_pytest_mypy_tests
