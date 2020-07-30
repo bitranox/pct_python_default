@@ -15,7 +15,7 @@ from setuptools import find_packages
 def is_travis_deploy() -> bool:
     if 'DEPLOY' not in os.environ:
         return False
-    if os.environ['DEPLOY'].lower() == 'True' and is_tagged_commit():
+    if os.environ['DEPLOY'].lower() == 'true' and is_tagged_commit():
         return True
     else:
         return False
@@ -23,7 +23,7 @@ def is_travis_deploy() -> bool:
 
 def is_tagged_commit() -> bool:
     if 'TRAVIS_TAG' in os.environ:
-        if os.environ['TRAVIS_TAG'] != '':
+        if os.environ['TRAVIS_TAG']:
             return True
     return False
 
