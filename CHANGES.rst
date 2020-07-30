@@ -12,6 +12,11 @@ todo:
     - multiple bdists to pypi
     - arm64
 
+0.1.6a0
+-------
+2020-07-30 : development
+    -
+
 0.1.5
 -------
 2020-07-30 : release
