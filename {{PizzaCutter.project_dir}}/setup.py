@@ -13,10 +13,12 @@ from setuptools import find_packages
 
 
 def is_travis_deploy() -> bool:
-    if 'travis_deploy' in os.environ:
-        if os.environ['travis_deploy'] == 'True':
-            return True
-    return False
+    if 'DEPLOY' not in os.environ:
+        return False
+    if os.environ['DEPLOY'].lower() == 'True' and is_tagged_commit():
+        return True
+    else:
+        return False
 
 
 def is_tagged_commit() -> bool:
