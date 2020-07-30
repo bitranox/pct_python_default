@@ -195,7 +195,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # ### setup.py Settings
         # include additional package data files here !!!
         self.setup_included_files: List[str] = list()
-        self.setup_included_files.append('requirements_test.txt')
         # included_files.append('some_text_file.txt')
         # minimal python version required - also used in .docs
         self.setup_minimal_python_version_required = '3.6.0'
