@@ -23,7 +23,7 @@ def is_travis_deploy() -> bool:
 
 def is_tagged_commit() -> bool:
     if 'TRAVIS_TAG' in os.environ:
-        if os.environ['TRAVIS_TAG'] != '':
+        if os.environ['TRAVIS_TAG']:
             return True
     return False
 
