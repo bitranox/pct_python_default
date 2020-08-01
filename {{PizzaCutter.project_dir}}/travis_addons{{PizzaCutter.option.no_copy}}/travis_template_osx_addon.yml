@@ -1,4 +1,5 @@
     - os: osx
+      if: {{PizzaCutter.travis.osx.condition}}
       language: sh
       name: "macOS 10.15.4"
       python: "3.8"
@@ -8,3 +9,8 @@
         - cPREFIX=""				# prefix before commands - used for wine, there the prefix is "wine"
         - cPYTHON="python3"			# command to launch python interpreter (its different on macOs, there we need python3)
         - cPIP="python3 -m pip"   	# command to launch pip (its different on macOs, there we need pip3)
+        - export BUILD_DOCS="{{PizzaCutter.travis.osx.build_docs}}"
+        - export DEPLOY_SDIST="{{PizzaCutter.travis.osx.deploy_sdist}}"
+        - export DEPLOY_WHEEL="{{PizzaCutter.travis.osx.deploy_wheel}}"
+        - export DEPLOY_TEST="{{PizzaCutter.travis.osx.deploy_test}}"
+        - export MYPY_STRICT="{{PizzaCutter.travis.osx.mypy_strict}}"   

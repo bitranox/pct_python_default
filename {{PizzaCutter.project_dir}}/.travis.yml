@@ -36,7 +36,6 @@ addons:
 services:   			# start services
   - xvfb    			# is needed for WINE on headless installation
 
-
 matrix:
     include:
 
@@ -58,6 +57,7 @@ script:
 after_success:
     - lib_travis after_success
     - lib_travis deploy
+    - ls -l ./dist
 
 notifications:
   email:

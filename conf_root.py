@@ -15,6 +15,26 @@ logging.basicConfig(format=FORMAT)
 logger.level = logging.INFO
 
 
+class TravisLinuxTestMatrix(object):
+    def __init__(self, arch: str,
+                 python_version: str,
+                 # only valid if self.do_pytest_mypy_tests = True
+                 mypy_strict: bool,
+                 deploy_sdist: bool,
+                 deploy_wheel: bool,
+                 deploy_test: bool,
+                 only_on_tagged_builds: bool,
+                 build_docs: bool):
+        self.arch = arch
+        self.python_version = python_version
+        self.mypy_strict = mypy_strict
+        self.deploy_sdist = deploy_sdist
+        self.deploy_wheel = deploy_wheel
+        self.deploy_test = deploy_test
+        self.only_on_tagged_builds = only_on_tagged_builds
+        self.build_docs = build_docs
+
+
 class PizzaCutterConfig(PizzaCutterConfigBase):
     def __init__(self,
                  pizza_cutter_path_conf_file: pathlib.Path = pathlib.Path(__file__).resolve(),
@@ -131,22 +151,74 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         # ### Travis Tests
         # Travis Linux Version 'bionic', 'xenial', 'trusty', 'precise'
-        self.travis_python_version = 'bionic'
+        self.travis_linux_version = 'bionic'
         self.travis_linux_tests = True
         self.travis_osx_tests = True
         self.travis_windows_tests = True
         self.travis_wine_tests = False
 
+        # ### TRAVIS windows Test Matrix
+        self.travis_windows_matrix_mypy_strict = True
+        self.travis_windows_matrix_deploy_sdist = False
+        self.travis_windows_matrix_deploy_wheel = False
+        self.travis_windows_matrix_deploy_test = True
+        self.travis_windows_matrix_only_on_tagged_builds = False
+        self.travis_windows_matrix_build_docs = False
+
+        # ### TRAVIS osx Test Matrix
+        self.travis_osx_matrix_mypy_strict = True
+        self.travis_osx_matrix_deploy_sdist = False
+        self.travis_osx_matrix_deploy_wheel = False
+        self.travis_osx_matrix_deploy_test = True
+        self.travis_osx_matrix_only_on_tagged_builds = False
+        self.travis_osx_matrix_build_docs = False
+
         # ### TRAVIS Linux Test Matrix
-        self.travis_linux_python_versions = ['3.6', '3.7', '3.8', '3.8-dev', 'pypy3']
-        # only valid if self.do_pytest_mypy_tests = True
-        self.mypy_strict_typecheck_on_python_versions: List[str] = ['3.6', '3.7', '3.8', '3.8-dev']
-        self.build_docs_on_python_versions: List[str] = ['3.8']
-        # only valid if self.is_pypi_package = True
-        # You must only state ONE python version which is used to deploy in the matrix,
-        # otherwise You would deploy multiple times !
-        self.deploy_check_on_python_versions: List[str] = ['3.6', '3.7', '3.8', '3.8-dev', 'pypy3']
-        self.deploy_to_pypi_on_python_versions: List[str] = ['3.6', '3.7', '3.8', 'pypy3']
+        self.travis_linux_test_matrix: List[TravisLinuxTestMatrix] = list()
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
+        # we only deploy sdist on tagged commits, once with python 3.8
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8-dev', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy3', mypy_strict=False, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
+
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.8', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.8', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.8', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
+
+        """
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.6', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.7', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.8-dev', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.6', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.7', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.8-dev', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.6', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.7', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.8-dev', mypy_strict=True, deploy_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+        """
 
         # travis secrets (encrypted environment variables) are stored in project_dir/travis_secrets/secrets/ and will be loaded
         # by PizzaCutter automatically into the travis.yml.
@@ -185,7 +257,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # self.requirements_test.append('mypy ; platform_python_implementation != "PyPy" and python_version >= "3.5"')
         # mypy seems not to work on pypy3, so we dont install it
         self.requirements_test.append('mypy ; platform_python_implementation != "PyPy"')
-        self.requirements_test.append('pytest')
+        # we need pytest 5.4 for pycodestyle
+        self.requirements_test.append('pytest==5.4')
         self.requirements_test.append('pytest-pycodestyle ; python_version >= "3.5"')
         self.requirements_test.append('pytest-mypy ; platform_python_implementation != "PyPy" and python_version >= "3.5"')
         self.requirements_test.append('pytest-runner')
@@ -395,6 +468,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.setup_travis()
         self.setup_travis_secrets()
         self.setup_travis_linux_tests()
+        self.setup_travis_windows_tests()
+        self.setup_travis_osx_tests()
         self.setup_requirements_test()
         self.setup_setup_py()
         self.setup_setup_cfg_pycodestyle()
@@ -446,7 +521,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
     # .travis.yml settings
     # ############################################################################
     def setup_travis(self):
-        self.pizza_cutter_patterns['{{PizzaCutter.travis.linux_version}}'] = self.travis_python_version
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.linux_version}}'] = self.travis_linux_version
         self.pizza_cutter_patterns['{{PizzaCutter.travis_windows_addon}}'] = ''
         self.pizza_cutter_patterns['{{PizzaCutter.travis_linux_addon}}'] = ''
         self.pizza_cutter_patterns['{{PizzaCutter.travis_pypy_addon}}'] = ''
@@ -503,28 +578,69 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         if not self.travis_linux_tests:
             self.pizza_cutter_patterns['{{PizzaCutter.travis.linux.tests}}'] = ''
         else:
-            travis_matrix_linux = \
+            travis_linux_matrix_item = \
                 """
     - os: linux
+      arch: "{arch}"
+      if: {condition}
       language: python
-      python: "{version}"
+      python: "{python_version}"
       before_install:
-          - export MYPY_STRICT="{mypy_strict_typecheck}"
           - export BUILD_DOCS="{build_docs}"
-          - export DEPLOY_CHECK="{deploy_check}"
-          - export DEPLOY="{deploy_on_pypi}"
-
+          - export DEPLOY_SDIST="{deploy_sdist}"
+          - export DEPLOY_WHEEL="{deploy_wheel}"
+          - export DEPLOY_TEST="{deploy_test}"
+          - export MYPY_STRICT="{mypy_strict}"   
 """
-            l_travis_linux_versions: List[str] = list()
-            for version in self.travis_linux_python_versions:
-                mypy_strict_typecheck = (version in self.mypy_strict_typecheck_on_python_versions) and self.do_pytest_mypy_tests
-                build_docs = version in self.build_docs_on_python_versions
-                deploy_check = (version in self.deploy_check_on_python_versions) and self.is_pypi_package
-                deploy_on_pypi = (version in self.deploy_to_pypi_on_python_versions) and self.is_pypi_package
-                l_travis_linux_versions.append(travis_matrix_linux.format(
-                    version=version, mypy_strict_typecheck=mypy_strict_typecheck,
-                    build_docs=build_docs, deploy_check=deploy_check, deploy_on_pypi=deploy_on_pypi))
-            self.pizza_cutter_patterns['{{PizzaCutter.travis.linux.tests}}'] = ''.join(l_travis_linux_versions)
+            l_travis_linux_tests: List[str] = list()
+            for matrix_item in self.travis_linux_test_matrix:
+                arch = matrix_item.arch
+
+                if matrix_item.only_on_tagged_builds:
+                    condition = 'tag IS present'
+                else:
+                    condition = 'true'
+                build_docs = matrix_item.build_docs
+                deploy_sdist = matrix_item.deploy_sdist
+                deploy_wheel = matrix_item.deploy_wheel
+                deploy_test = matrix_item.deploy_test
+                mypy_strict = matrix_item.mypy_strict and self.do_pytest_mypy_tests
+                python_version = matrix_item.python_version
+
+                l_travis_linux_tests.append(travis_linux_matrix_item.format(
+                    arch=arch, condition=condition, build_docs=build_docs, deploy_sdist=deploy_sdist, deploy_test=deploy_test,
+                    deploy_wheel=deploy_wheel, mypy_strict=mypy_strict, python_version=python_version))
+            self.pizza_cutter_patterns['{{PizzaCutter.travis.linux.tests}}'] = ''.join(l_travis_linux_tests)
+
+    # ############################################################################
+    # .travis Windows Matrix settings
+    # ############################################################################
+    def setup_travis_windows_tests(self) -> None:
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.mypy_strict}}'] = str(self.travis_windows_matrix_mypy_strict)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.deploy_sdist}}'] = str(self.travis_windows_matrix_deploy_sdist)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.deploy_wheel}}'] = str(self.travis_windows_matrix_deploy_wheel)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.deploy_test}}'] = str(self.travis_windows_matrix_deploy_test)
+        if self.travis_windows_matrix_only_on_tagged_builds:
+            condition = 'tag IS present'
+        else:
+            condition = 'true'
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.condition}}'] = condition
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.build_docs}}'] = str(self.travis_windows_matrix_build_docs)
+
+    # ############################################################################
+    # .travis Windows Matrix settings
+    # ############################################################################
+    def setup_travis_osx_tests(self) -> None:
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.mypy_strict}}'] = str(self.travis_osx_matrix_mypy_strict)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.deploy_sdist}}'] = str(self.travis_osx_matrix_deploy_sdist)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.deploy_wheel}}'] = str(self.travis_osx_matrix_deploy_wheel)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.deploy_test}}'] = str(self.travis_osx_matrix_deploy_test)
+        if self.travis_osx_matrix_only_on_tagged_builds:
+            condition = 'tag IS present'
+        else:
+            condition = 'true'
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.condition}}'] = condition
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.build_docs}}'] = str(self.travis_osx_matrix_build_docs)
 
     # ############################################################################
     # test_dir/local_testscripts settings
@@ -574,14 +690,30 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
     def setup_docs_python_test_info(self) -> None:
         # supports python 3.6-3.8, pypy3 and possibly other dialects.
         # tested for python 3.6, 3.7, 3.8, 3.8-dev, pypy3
-        str_python_test_info = 'tested on linux "{travis_python_version}" with python {versions}'
-        versions = ', '.join(self.travis_linux_python_versions)
-        self.pizza_cutter_patterns['{{PizzaCutter.docs.python_test_info}}'] = str_python_test_info.format(versions=versions,
-                                                                                                          travis_python_version=self.travis_python_version)
+        def get_linux_versions():
+            linux_versions: List[str] = list()
+            for travis_linux_test in self.travis_linux_test_matrix:
+                if travis_linux_test.python_version not in linux_versions:
+                    linux_versions.append(travis_linux_test.python_version)
+            return linux_versions
+
+        def get_archs():
+            archs: List[str] = list()
+            for travis_linux_test in self.travis_linux_test_matrix:
+                if travis_linux_test.arch not in archs:
+                    archs.append(travis_linux_test.arch)
+            return archs
+
+        str_python_test_info = 'tested on linux "{travis_python_version}" with python {versions} - architectures: {architectures}'.format(
+            travis_python_version=self.travis_linux_version,
+            versions=', '.join(get_linux_versions()),
+            architectures=', '.join(get_archs()),
+            )
+        self.pizza_cutter_patterns['{{PizzaCutter.docs.python_test_info}}'] = str_python_test_info
         self.pizza_cutter_patterns['{{PizzaCutter.docs.python_required}}'] = self.setup_minimal_python_version_required
 
     # ############################################################################
-    # docs - {{PizzaCutter.docs.test_info}} for .docs/tested_under.rst
+    # docs - {{PizzaCutter.docs.pypi_requirements}}, {{PizzaCutter.docs.include_installation_via_pypi}}
     # ############################################################################
     def setup_docs_installation_pypi(self):
         if self.is_pypi_package:
