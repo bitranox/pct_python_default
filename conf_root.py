@@ -22,7 +22,7 @@ class TravisLinuxTestMatrix(object):
                  mypy_strict: bool,
                  deploy_sdist: bool,
                  deploy_wheel: bool,
-                 deploy_test: bool,
+                 build_test: bool,
                  only_on_tagged_builds: bool,
                  build_docs: bool):
         self.arch = arch
@@ -30,7 +30,7 @@ class TravisLinuxTestMatrix(object):
         self.mypy_strict = mypy_strict
         self.deploy_sdist = deploy_sdist
         self.deploy_wheel = deploy_wheel
-        self.deploy_test = deploy_test
+        self.build_test = build_test
         self.only_on_tagged_builds = only_on_tagged_builds
         self.build_docs = build_docs
 
@@ -161,7 +161,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.travis_windows_matrix_mypy_strict = True
         self.travis_windows_matrix_deploy_sdist = False
         self.travis_windows_matrix_deploy_wheel = False
-        self.travis_windows_matrix_deploy_test = False
+        self.travis_windows_matrix_build_test = False
         self.travis_windows_matrix_only_on_tagged_builds = False
         self.travis_windows_matrix_build_docs = False
 
@@ -169,30 +169,30 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.travis_osx_matrix_mypy_strict = True
         self.travis_osx_matrix_deploy_sdist = False
         self.travis_osx_matrix_deploy_wheel = False
-        self.travis_osx_matrix_deploy_test = True
+        self.travis_osx_matrix_build_test = True
         self.travis_osx_matrix_only_on_tagged_builds = False
         self.travis_osx_matrix_build_docs = False
 
         # ### TRAVIS Linux Test Matrix
         self.travis_linux_test_matrix: List[TravisLinuxTestMatrix] = list()
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', mypy_strict=True, deploy_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', mypy_strict=True, build_test=True,
                                                                    deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', mypy_strict=True, deploy_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', mypy_strict=True, build_test=True,
                                                                    deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
         # we only deploy sdist on tagged commits, once with python 3.8
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', mypy_strict=True, deploy_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', mypy_strict=True, build_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8-dev', mypy_strict=True, deploy_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8-dev', mypy_strict=True, build_test=True,
                                                                    deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy3', mypy_strict=False, deploy_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy3', mypy_strict=False, build_test=True,
                                                                    deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
 
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.8', mypy_strict=True, deploy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.8', mypy_strict=True, deploy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.8', mypy_strict=True, deploy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.8', mypy_strict=True, build_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.8', mypy_strict=True, build_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.8', mypy_strict=True, build_test=True,
+                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
 
         """
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.6', mypy_strict=True, deploy_test=True,
@@ -589,7 +589,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
           - export BUILD_DOCS="{build_docs}"
           - export DEPLOY_SDIST="{deploy_sdist}"
           - export DEPLOY_WHEEL="{deploy_wheel}"
-          - export DEPLOY_TEST="{deploy_test}"
+          - export BUILD_TEST="{build_test}"
           - export MYPY_STRICT="{mypy_strict}"   
 """
             l_travis_linux_tests: List[str] = list()
@@ -603,12 +603,12 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                 build_docs = matrix_item.build_docs
                 deploy_sdist = matrix_item.deploy_sdist
                 deploy_wheel = matrix_item.deploy_wheel
-                deploy_test = matrix_item.deploy_test
+                build_test = matrix_item.build_test
                 mypy_strict = matrix_item.mypy_strict and self.do_pytest_mypy_tests
                 python_version = matrix_item.python_version
 
                 l_travis_linux_tests.append(travis_linux_matrix_item.format(
-                    arch=arch, condition=condition, build_docs=build_docs, deploy_sdist=deploy_sdist, deploy_test=deploy_test,
+                    arch=arch, condition=condition, build_docs=build_docs, deploy_sdist=deploy_sdist, build_test=build_test,
                     deploy_wheel=deploy_wheel, mypy_strict=mypy_strict, python_version=python_version))
             self.pizza_cutter_patterns['{{PizzaCutter.travis.linux.tests}}'] = ''.join(l_travis_linux_tests)
 
@@ -619,7 +619,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.mypy_strict}}'] = str(self.travis_windows_matrix_mypy_strict)
         self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.deploy_sdist}}'] = str(self.travis_windows_matrix_deploy_sdist)
         self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.deploy_wheel}}'] = str(self.travis_windows_matrix_deploy_wheel)
-        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.deploy_test}}'] = str(self.travis_windows_matrix_deploy_test)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.build_test}}'] = str(self.travis_windows_matrix_build_test)
         if self.travis_windows_matrix_only_on_tagged_builds:
             condition = 'tag IS present'
         else:
@@ -634,7 +634,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.mypy_strict}}'] = str(self.travis_osx_matrix_mypy_strict)
         self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.deploy_sdist}}'] = str(self.travis_osx_matrix_deploy_sdist)
         self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.deploy_wheel}}'] = str(self.travis_osx_matrix_deploy_wheel)
-        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.deploy_test}}'] = str(self.travis_osx_matrix_deploy_test)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.build_test}}'] = str(self.travis_osx_matrix_build_test)
         if self.travis_osx_matrix_only_on_tagged_builds:
             condition = 'tag IS present'
         else:
