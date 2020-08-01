@@ -1,7 +1,8 @@
+Version {{PizzaCutter.version}} as of {{PizzaCutter.date}}
+see `Changelog`_
+
 {{PizzaCutter.repository}}
 {{PizzaCutter.double_underline_repository}}
-
-Version {{PizzaCutter.version}} as of {{PizzaCutter.date}}, see `Changelog`_.
 
 
 .. include:: ./badges.rst
