@@ -161,7 +161,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.travis_windows_matrix_mypy_strict = True
         self.travis_windows_matrix_deploy_sdist = False
         self.travis_windows_matrix_deploy_wheel = False
-        self.travis_windows_matrix_deploy_test = True
+        self.travis_windows_matrix_deploy_test = False
         self.travis_windows_matrix_only_on_tagged_builds = False
         self.travis_windows_matrix_build_docs = False
 

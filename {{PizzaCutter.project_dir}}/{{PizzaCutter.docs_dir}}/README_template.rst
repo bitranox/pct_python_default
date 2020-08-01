@@ -1,5 +1,4 @@
-Version {{PizzaCutter.version}} as of {{PizzaCutter.date}}
-see `Changelog`_
+Version {{PizzaCutter.version}} as of {{PizzaCutter.date}} see `Changelog`_
 
 {{PizzaCutter.repository}}
 {{PizzaCutter.double_underline_repository}}
