@@ -114,7 +114,9 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # additional pythonpaths to pass to the run_testloop.sh (lib_bash_functions.sh)
         self.testscript_additional_pythonpaths: List[str] = list()          # only append or delete from this list in inherited configs
         # for a list of codestyle options see : https://pycodestyle.pycqa.org/en/latest/intro.html#error-codes
-        self.pytest_pycodestyle_ignores: List[str] = ['E402', 'E123']       # only append or delete from this list in inherited configs
+        # only append or delete from this list in inherited configs
+        # W503 and E203 are disabled for black, see : https://black.readthedocs.io/en/stable/the_black_code_style.html
+        self.pytest_pycodestyle_ignores: List[str] = ['E123', 'E203', 'E402', 'E501', 'W503']
         self.pytest_pycodestyle_max_line_length: int = 160
 
         # ### local testscript settings
