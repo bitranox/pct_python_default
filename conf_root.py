@@ -145,7 +145,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # #############################
         # black settings
         # #############################
-        self.requirements_test.append('black')
+        self.requirements_test.append('black ; platform_python_implementation != "PyPy"')
+        self.requirements_test.append('black==19.3b0 ; platform_python_implementation == "PyPy"')
         self.black_line_length: int = 88
         # put the lowest version in use here, so it will be compatible with later versions
         self.black_target_versions: List[str] = ['py36']
