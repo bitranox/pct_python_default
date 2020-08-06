@@ -541,7 +541,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
     # requirements_test.txt settings
     # ############################################################################
     def setup_requirements_test(self):
-        self.requirements_test = list(set(self.requirements_test))
+        self.requirements_test = sorted(list(set(self.requirements_test)))
         self.pizza_cutter_patterns['# {{PizzaCutter.requirements_test}}'] = '\n'.join(self.requirements_test)
 
     # ############################################################################
