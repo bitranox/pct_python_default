@@ -13,6 +13,8 @@ sudo_askpass="$(command -v ssh-askpass)"
 export SUDO_ASKPASS="${sudo_askpass}"
 export NO_AT_BRIDGE=1                        # get rid of (ssh-askpass:25930): dbind-WARNING **: 18:46:12.019: Couldn't register with accessibility bus: Did not receive a reply.
 
+DO_FLAKE8_TESTS="{{PizzaCutter.flake8_do_tests_in_local_testscript}}"
+
 tests_dir="$(dirname "${own_dir}")"          # one level up
 project_root_dir="$(dirname "${tests_dir}")" # one level up
 
@@ -80,6 +82,8 @@ function install_test_requirements() {
   python3 -m pip install --upgrade wheel
   # this we need for local testscripts
   python3 -m pip install --upgrade click
+  if [[ "${DO_FLAKE8_TESTS}" == "True" ]]; then python3 -m pip install --upgrade flake8; fi
+
 
   if test -f "${project_root_dir}/requirements_test.txt"; then
     clr_green "installing/updating test requirements from \"requirements_test.txt\""
@@ -111,6 +115,29 @@ function cleanup() {
   clean_caches
   cd "${save_dir}" || exit
   trap 2 # enable Ctrl+C
+}
+
+function run_pycodestyle_tests() {
+  # run pycodestyle, settings from setup.cfg
+  my_banner "running flake8 with settings from ${project_root_dir}/setup.cfg"
+  if ! python3 -m flake8 --append-config="${project_root_dir}/setup.cfg" "$@" "${project_root_dir}"; then
+    my_banner_warning "flake8 ERROR"
+    beep
+    sleep "${sleeptime_on_error}"
+    return 1
+  fi
+}
+
+
+function run_flake8_tests() {
+  # run flake8, settings from setup.cfg
+  my_banner "running flake8 with settings from ${project_root_dir}/setup.cfg"
+  if ! python3 -m flake8 --append-config="${project_root_dir}/setup.cfg" "$@" "${project_root_dir}"; then
+    my_banner_warning "flake8 ERROR"
+    beep
+    sleep "${sleeptime_on_error}"
+    return 1
+  fi
 }
 
 function run_pytest() {

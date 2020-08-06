@@ -59,6 +59,15 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_quiet = False
 
 # ##############################################################################################################################################################
+# Project Configuration - some lists that should only defined in the root configuration
+# append or remove from that lists as needed !
+# ##############################################################################################################################################################
+
+        # ### requirements_test.txt Settings
+        self.requirements_test: List[str] = list()
+
+
+# ##############################################################################################################################################################
 # Project Configuration - single point for all configuration of the project
 # ##############################################################################################################################################################
 
@@ -93,7 +102,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         # ### pytest settings
         # (travis and local run_testloop.sh, via conftest.py)
-        self.do_pytest_pep8_tests = True
         self.do_pytest_mypy_tests = True
         self.do_code_coverage_codecov = True
         # additional args for mypy and pycodestyle when running pytest setup.py test, etc.
@@ -102,22 +110,47 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pytest_mypy_args: List[str] = list()
         # only append or delete from this list in inherited configs
         self.pytest_pycodestyle_args: List[str] = list()
-        # ### additional args for mypy and pycodestyle when running pytest setup.py test, etc.
-        # ### set in conftest.py - usually You dont need to add anything here
-        # only append or delete from this list in inherited configs
-        # self.pytest_mypy_args.append('--example')
-        # only append or delete from this list in inherited configs
-        # self.pytest_pycodestyle_args.append('--example')
 
         # to upload code climate code coverage, You need to create the secret CC_TEST_REPORTER_ID
         self.do_code_coverage_code_climate = True
         # additional pythonpaths to pass to the run_testloop.sh (lib_bash_functions.sh)
         self.testscript_additional_pythonpaths: List[str] = list()          # only append or delete from this list in inherited configs
         # for a list of codestyle options see : https://pycodestyle.pycqa.org/en/latest/intro.html#error-codes
-        # only append or delete from this list in inherited configs
+
+        # common excludes - usually excluded directories for different tools
+        self.common_excludes: List[str] = ['.git', '__pycache__', 'build', 'dist', '.eggs', '.hg',
+                                           '.mypy_cache', '.nox', '.tox', '.venv', '_build', 'buck-out']
+
+        # #######################################
+        # ### pycodestyle settings (deprecated)
+        # #######################################
         # W503 and E203 are disabled for black, see : https://black.readthedocs.io/en/stable/the_black_code_style.html
-        self.pytest_pycodestyle_ignores: List[str] = ['E123', 'E203', 'E402', 'E501', 'W503']
-        self.pytest_pycodestyle_max_line_length: int = 160
+        self.do_pytest_pep8_tests = True
+        self.requirements_test.append('pycodestyle')
+        self.pycodestyle_ignores: List[str] = ['E123', 'E203', 'E402', 'W503']
+        self.pycodestyle_max_line_length: int = 160
+
+        # #############################
+        # ### flake8 settings
+        # #############################
+        self.requirements_test.append('flake8')
+        self.flake8_do_tests_in_local_testscript = True
+        self.flake8_do_tests_in_travis = True
+        # W503 and E203 are disabled for black, see : https://black.readthedocs.io/en/stable/the_black_code_style.html
+        self.flake8_ignores: List[str] = ['E123', 'E203', 'E402', 'W503']
+        self.flake8_max_line_length: int = 160
+        self.flake8_max_complexity: int = 10
+        self.flake8_exclude: List[str] = self.common_excludes
+
+        # #############################
+        # black settings
+        # #############################
+        self.requirements_test.append('black')
+        self.black_line_length: int = 88
+        # put the lowest version in use here, so it will be compatible with later versions
+        self.black_target_versions: List[str] = ['py36']
+        self.black_include_regexp: str = r'\.pyi?$'
+        self.black_exclude_regexp: str = r'/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist)/'
 
         # ### local testscript settings
 
@@ -252,9 +285,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.docs_code_coverage_bragging = '100%'
 
         # ### requirements_test.txt Settings
-        # add here the requirements for which be installed temporarily for
-        # "setup.py install test" or "pip install <package> --install-option test"
-        self.requirements_test: List[str] = list()
+        # add here the requirements which will be needed for local or travis testing
         self.requirements_test.append('coloredlogs')
         # self.requirements_test.append('mypy ; platform_python_implementation != "PyPy" and python_version >= "3.5"')
         # mypy seems not to work on pypy3, so we dont install it
@@ -318,6 +349,9 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # the path of the package dir
         self.path_package_dir = self.pizza_cutter_path_target_dir / self.project_dir / self.package_dir
         self.path_project_dir = self.pizza_cutter_path_target_dir / self.project_dir
+
+        if self.flake8_do_tests_in_local_testscript or self.flake8_do_tests_in_travis:
+            self.requirements_test.append('flake8')
 
     # ##########################################################################################################################################################
     # replacement patterns
@@ -478,7 +512,9 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.setup_travis_osx_tests()
         self.setup_requirements_test()
         self.setup_setup_py()
-        self.setup_setup_cfg_pycodestyle()
+        self.setup_pycodestyle()
+        self.setup_flake8()
+        self.setup_black()
         self.setup_conftest_py()
 
     # ############################################################################
@@ -504,14 +540,35 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
     # requirements_test.txt settings
     # ############################################################################
     def setup_requirements_test(self):
+        self.requirements_test = list(set(self.requirements_test))
         self.pizza_cutter_patterns['# {{PizzaCutter.requirements_test}}'] = '\n'.join(self.requirements_test)
 
     # ############################################################################
-    # setup.cfg pycodestyle settings
+    # pycodestyle settings
     # ############################################################################
-    def setup_setup_cfg_pycodestyle(self):
-        self.pizza_cutter_patterns['{{PizzaCutter.pytest_pycodestyle_ignores}}'] = ', '.join(self.pytest_pycodestyle_ignores)
-        self.pizza_cutter_patterns['{{PizzaCutter.pytest_pycodestyle_max_line_length}}'] = str(self.pytest_pycodestyle_max_line_length)
+    def setup_pycodestyle(self):
+        self.pizza_cutter_patterns['{{PizzaCutter.pycodestyle_ignores}}'] = ', '.join(self.pycodestyle_ignores)
+        self.pizza_cutter_patterns['{{PizzaCutter.pycodestyle_max_line_length}}'] = str(self.pycodestyle_max_line_length)
+
+    # ############################################################################
+    # flake8 settings
+    # ############################################################################
+    def setup_flake8(self):
+        self.pizza_cutter_patterns['{{PizzaCutter.flake8_do_tests_in_local_testscript}}'] = str(self.flake8_do_tests_in_local_testscript)
+        self.pizza_cutter_patterns['{{PizzaCutter.flake8_do_tests_in_travis}}'] = str(self.flake8_do_tests_in_travis)
+        self.pizza_cutter_patterns['{{PizzaCutter.flake8_ignores}}'] = ', '.join(self.flake8_ignores)
+        self.pizza_cutter_patterns['{{PizzaCutter.flake8_max_line_length}}'] = str(self.flake8_max_line_length)
+        self.pizza_cutter_patterns['{{PizzaCutter.flake8_max_complexity}}'] = str(self.flake8_max_complexity)
+        self.pizza_cutter_patterns['{{PizzaCutter.flake8_exclude}}'] = ', '.join(self.flake8_exclude)
+
+    # ############################################################################
+    # black settings
+    # ############################################################################
+    def setup_black(self):
+        self.pizza_cutter_patterns['{{PizzaCutter.black_line_length}}'] = str(self.black_line_length)
+        self.pizza_cutter_patterns['{{PizzaCutter.black_target_versions}}'] = str(self.black_target_versions)
+        self.pizza_cutter_patterns['{{PizzaCutter.black_include_regexp}}'] = self.black_include_regexp
+        self.pizza_cutter_patterns['{{PizzaCutter.black_exclude_regexp}}'] = self.black_exclude_regexp
 
     # ############################################################################
     # setup.py settings
@@ -807,6 +864,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         else:
             (self.path_package_dir / 'py.typed').unlink(missing_ok=True)
 
+        # create documentation
         import rst_include
 
         path_cli_module = self.path_package_dir / (self.cli_module + '.py')
@@ -822,6 +880,13 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         text = path_rst_target_file.read_text()
         text = text.replace('{{\PizzaCutter', '{{PizzaCutter')
         path_rst_target_file.write_text(text)
+
+        # black setup.py
+        path_setup_py = self.path_project_dir / 'setup.py'
+        if path_setup_py.is_file():
+            logger.warning('reformatting "{path_setup_py}"'.format(path_setup_py=path_setup_py))
+            command = 'black {path_setup_py}'.format(path_setup_py=path_setup_py)
+            subprocess.run(command, shell=True)
 
     # TODO: make external module in order to parse click help for sub commands / groups
     def create_commandline_help_file(self, path_cli_module: pathlib.Path, path_cli_help_rst_file: pathlib.Path, registered_shell_command: str) -> None:
