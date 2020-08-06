@@ -23,8 +23,13 @@ env:
         - RST_INCLUDE_SOURCE="{{PizzaCutter.travis.rst_include_source}}"
         # the target file for rst_include (rebuild rst file includes)
         - RST_INCLUDE_TARGET="{{PizzaCutter.travis.rst_include_target}}"
+
+        # do flake8 tests
+        - DO_FLAKE8_TESTS="{{PizzaCutter.flake8_do_tests_in_travis}}"
+
         # secure environment variable
 {{PizzaCutter.travis.secrets}}{{PizzaCutter.option.delete_line_if_empty}}
+
 
 
 addons:
