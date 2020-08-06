@@ -10,7 +10,6 @@ fi
 # shellcheck disable=SC1090
 source "${own_dir}/lib_bash_functions.sh"
 project_root_dir="${project_root_dir}"
-DO_PYCODESTYLE_TESTS="{{PizzaCutter.pycodestyle_do_tests_in_local_testscript}}"
 DO_FLAKE8_TESTS="{{PizzaCutter.flake8_do_tests_in_local_testscript}}"
 DO_MYPY_TESTS="{{PizzaCutter.testscript.do_mypy_tests}}"
 # cleanup on cntrl-c

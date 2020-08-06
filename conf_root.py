@@ -143,7 +143,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.flake8_exclude: List[str] = self.common_excludes
 
         # #############################
-        # black settings
+        # ### black settings
         # #############################
         self.requirements_test.append('black ; platform_python_implementation != "PyPy"')
         self.requirements_test.append('black==19.3b0 ; platform_python_implementation == "PyPy"')
