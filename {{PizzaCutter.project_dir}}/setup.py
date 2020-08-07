@@ -5,7 +5,7 @@ import os
 import pathlib
 from typing import Any, List, Dict
 
-from setuptools import setup
+from setuptools import setup    # type: ignore
 from setuptools import find_packages
 
 
