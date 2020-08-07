@@ -22,7 +22,8 @@ class TravisLinuxTestMatrix(object):
                  deploy_wheel: bool,
                  build_test: bool,
                  only_on_tagged_builds: bool,
-                 build_docs: bool):
+                 build_docs: bool,
+                 mypy_test: bool):
         self.arch = arch
         self.python_version = python_version
         self.deploy_sdist = deploy_sdist
@@ -30,6 +31,7 @@ class TravisLinuxTestMatrix(object):
         self.build_test = build_test
         self.only_on_tagged_builds = only_on_tagged_builds
         self.build_docs = build_docs
+        self.mypy_test = mypy_test
 
 
 class PizzaCutterConfig(PizzaCutterConfigBase):
@@ -218,23 +220,23 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         # ### TRAVIS Linux Test Matrix
         self.travis_linux_test_matrix: List[TravisLinuxTestMatrix] = list()
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', build_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', build_test=True, mypy_test=True,
                                                                    deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
                                                                    deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
         # we only deploy sdist on tagged commits, once with python 3.8
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8-dev', build_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8-dev', build_test=True, mypy_test=True,
                                                                    deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy3', build_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy3', build_test=True, mypy_test=False,
                                                                    deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
 
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.8', build_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.8', build_test=True, mypy_test=True,
                                                                    deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.8', build_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.8', build_test=True, mypy_test=True,
                                                                    deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.8', build_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.8', build_test=True, mypy_test=True,
                                                                    deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
 
         """
@@ -572,20 +574,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.do_code_coverage_code_climate = True
         self.do_code_coverage_codecov = True
 
-        '''
-        travis.yml:
-        DO_COVERAGE
-        DO_COVERAGE_UPLOAD_CODECOV
-        DO_COVERAGE_UPLOAD_CODE_CLIMATE
-
-
-        run(description='install codecov', command=' '.join([pip_prefix, 'install --upgrade codecov']))
-        run(description='install pytest-cov', command=' '.join([pip_prefix, 'install --upgrade pytest-cov']))
-        '''
-
-
-
-
     # ############################################################################
     # mypy settings
     # ############################################################################
@@ -690,6 +678,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
           - export DEPLOY_SDIST="{deploy_sdist}"
           - export DEPLOY_WHEEL="{deploy_wheel}"
           - export BUILD_TEST="{build_test}"
+          - export MYPY_DO_TESTS="{mypy_test}"
 """
             l_travis_linux_tests: List[str] = list()
             for matrix_item in self.travis_linux_test_matrix:
@@ -704,10 +693,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                 deploy_wheel = matrix_item.deploy_wheel
                 build_test = matrix_item.build_test
                 python_version = matrix_item.python_version
+                mypy_test = matrix_item.mypy_test
 
                 l_travis_linux_tests.append(travis_linux_matrix_item.format(
                     arch=arch, condition=condition, build_docs=build_docs, deploy_sdist=deploy_sdist, build_test=build_test,
-                    deploy_wheel=deploy_wheel, python_version=python_version))
+                    deploy_wheel=deploy_wheel, python_version=python_version, mypy_test=mypy_test))
             self.pizza_cutter_patterns['{{PizzaCutter.travis.linux.tests}}'] = ''.join(l_travis_linux_tests)
 
     # ############################################################################
