@@ -17,3 +17,4 @@
           - export DEPLOY_SDIST="{{PizzaCutter.travis.windows.deploy_sdist}}"
           - export DEPLOY_WHEEL="{{PizzaCutter.travis.windows.deploy_wheel}}"
           - export DEPLOY_TEST="{{PizzaCutter.travis.windows.build_test}}"
+          - export MYPY_DO_TESTS="{{PizzaCutter.travis.windows.mypy_test}}"

@@ -13,3 +13,4 @@
         - export DEPLOY_SDIST="{{PizzaCutter.travis.osx.deploy_sdist}}"
         - export DEPLOY_WHEEL="{{PizzaCutter.travis.osx.deploy_wheel}}"
         - export DEPLOY_TEST="{{PizzaCutter.travis.osx.build_test}}"
+        - export MYPY_DO_TESTS="{{PizzaCutter.travis.osx.mypy_test}}"
