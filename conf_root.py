@@ -221,23 +221,23 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # ### TRAVIS Linux Test Matrix
         self.travis_linux_test_matrix: List[TravisLinuxTestMatrix] = list()
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
         # we only deploy sdist on tagged commits, once with python 3.8
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8-dev', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy3', build_test=True, mypy_test=False,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
 
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.8', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.8', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.8', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
 
         """
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.6', deploy_test=True,
