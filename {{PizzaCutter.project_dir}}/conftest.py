@@ -17,12 +17,10 @@ def pytest_cmdline_preparse(args: List[str]) -> None:
     """
 
     additional_mypy_args: List[str] = list()
-    additional_pycodestyle_args: List[str] = list()
 
     # add mypy option if not pypy
     # if platform.python_implementation() != "PyPy" and sys.version_info >= (3, 5) and sys.version_info != (3, 6):  # type: ignore
     if platform.python_implementation() != "PyPy":
         additional_mypy_args = {{PizzaCutter.pytest_mypy_args}}
 
-    additional_pycodestyle_args = {{PizzaCutter.pytest_pycodestyle_args}}
-    args[:] = list(set(args + additional_mypy_args + additional_pycodestyle_args))
+    args[:] = list(set(args + additional_mypy_args))

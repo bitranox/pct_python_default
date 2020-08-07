@@ -121,15 +121,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.common_excludes: List[str] = ['.git', '__pycache__', 'build', 'dist', '.eggs', '.hg',
                                            '.mypy_cache', '.nox', '.tox', '.venv', '_build', 'buck-out']
 
-        # #######################################
-        # ### pycodestyle settings (deprecated)
-        # #######################################
-        # W503 and E203 are disabled for black, see : https://black.readthedocs.io/en/stable/the_black_code_style.html
-        self.do_pytest_pep8_tests = True
-        self.requirements_test.append('pycodestyle')
-        self.pycodestyle_ignores: List[str] = ['E123', 'E203', 'E402', 'W503']
-        self.pycodestyle_max_line_length: int = 160
-
         # #############################
         # ### flake8 settings
         # #############################
@@ -292,9 +283,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # self.requirements_test.append('mypy ; platform_python_implementation != "PyPy" and python_version >= "3.5"')
         # mypy seems not to work on pypy3, so we dont install it
         self.requirements_test.append('mypy ; platform_python_implementation != "PyPy"')
-        # we need pytest 5.4 for pycodestyle
-        self.requirements_test.append('pytest==5.4')
-        self.requirements_test.append('pytest-pycodestyle ; python_version >= "3.5"')
+        self.requirements_test.append('pytest')
         self.requirements_test.append('pytest-mypy ; platform_python_implementation != "PyPy" and python_version >= "3.5"')
         self.requirements_test.append('pytest-runner')
         # You should test if Your module is pickable for multiprocessing on windows - use dill, see project gh/bitranox/lib_platform/tests
@@ -514,7 +503,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.setup_travis_osx_tests()
         self.setup_requirements_test()
         self.setup_setup_py()
-        self.setup_pycodestyle()
         self.setup_flake8()
         self.setup_black()
         self.setup_conftest_py()
@@ -531,26 +519,12 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         self.pizza_cutter_patterns['{{PizzaCutter.pytest_mypy_args}}'] = str(list(set(self.pytest_mypy_args)))
 
-        if self.do_pytest_pep8_tests:
-            self.pytest_pycodestyle_args.append('--pycodestyle')
-        else:
-            remove_from_list(self.pytest_pycodestyle_args, '--pycodestyle')
-
-        self.pizza_cutter_patterns['{{PizzaCutter.pytest_pycodestyle_args}}'] = str(list(set(self.pytest_pycodestyle_args)))
-
     # ############################################################################
     # requirements_test.txt settings
     # ############################################################################
     def setup_requirements_test(self):
         self.requirements_test = sorted(list(set(self.requirements_test)))
         self.pizza_cutter_patterns['# {{PizzaCutter.requirements_test}}'] = '\n'.join(self.requirements_test)
-
-    # ############################################################################
-    # pycodestyle settings
-    # ############################################################################
-    def setup_pycodestyle(self):
-        self.pizza_cutter_patterns['{{PizzaCutter.pycodestyle_ignores}}'] = ', '.join(self.pycodestyle_ignores)
-        self.pizza_cutter_patterns['{{PizzaCutter.pycodestyle_max_line_length}}'] = str(self.pycodestyle_max_line_length)
 
     # ############################################################################
     # flake8 settings
@@ -814,8 +788,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         else:
             msg_code_coverage = ''
 
-        if self.do_pytest_pep8_tests:
-            msg_style_checking = 'codestyle checking ,'
+        if self.flake8_do_tests_in_travis:
+            msg_style_checking = 'flake8 style checking ,'
         else:
             msg_style_checking = ''
 
