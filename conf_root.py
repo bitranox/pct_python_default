@@ -124,7 +124,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.flake8_do_tests_in_travis = True
         # W503 and E203 are disabled for black, see : https://black.readthedocs.io/en/stable/the_black_code_style.html
         # F401, unused imports
-        self.flake8_ignores: List[str] = ['E123', 'E203', 'E402', 'F401', 'F403', 'W503']
+        self.flake8_ignores: List[str] = ['E123', 'E203', 'E402', 'F401', 'F403', 'F405', 'W503']
         self.flake8_max_line_length: int = 160
         self.flake8_max_complexity: int = 10
         self.flake8_exclude: List[str] = self.common_excludes
