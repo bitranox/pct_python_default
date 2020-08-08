@@ -226,7 +226,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
-        # we only deploy sdist on tagged commits, once with python 3.8
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8-dev', build_test=True, mypy_test=True,
@@ -240,32 +239,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.8', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
-
-        """
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.6', deploy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.7', deploy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
-
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.8-dev', deploy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
-
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.6', deploy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.7', deploy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
-
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.8-dev', deploy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
-
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.6', deploy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.7', deploy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
-
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.8-dev', deploy_test=True,
-                                                                   deploy_sdist=False, deploy_wheel=False, only_on_tagged_builds=True, build_docs=False))
-        """
 
         # ### .docs Settings
         # if to show badge for jupyter
