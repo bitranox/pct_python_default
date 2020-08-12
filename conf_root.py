@@ -668,7 +668,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                 deploy_wheel = matrix_item.deploy_wheel
                 build_test = matrix_item.build_test
                 python_version = matrix_item.python_version
-                mypy_test = matrix_item.mypy_test
+                mypy_test = matrix_item.mypy_test and self.mypy_do_tests_in_travis
 
                 l_travis_linux_tests.append(travis_linux_matrix_item.format(
                     arch=arch, condition=condition, build_docs=build_docs, deploy_sdist=deploy_sdist, build_test=build_test,
@@ -688,7 +688,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             condition = 'true'
         self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.condition}}'] = condition
         self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.build_docs}}'] = str(self.travis_windows_matrix_build_docs)
-        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.mypy_test}}'] = str(self.travis_windows_matrix_mypy_test)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.mypy_test}}'] = str(self.travis_windows_matrix_mypy_test and self.mypy_do_tests_in_travis)
 
     # ############################################################################
     # .travis Windows Matrix settings
@@ -703,8 +703,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             condition = 'true'
         self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.condition}}'] = condition
         self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.build_docs}}'] = str(self.travis_osx_matrix_build_docs)
-        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.mypy_test}}'] = str(self.travis_osx_matrix_mypy_test)
-
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.mypy_test}}'] = str(self.travis_osx_matrix_mypy_test and self.mypy_do_tests_in_travis)
 
     # ############################################################################
     # test_dir/local_testscripts settings
