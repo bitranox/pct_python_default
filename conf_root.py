@@ -886,11 +886,13 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # black files if needed
         # we guess that if setup.py exists, we are in the final package
         path_setup_py = self.path_project_dir / 'setup.py'
+
         if path_setup_py.is_file() and self.black_auto_in_local_testscript:
             path_black = self.path_project_dir / '**/*.py'
             command = 'black {path_black}'.format(path_black=path_black)
             subprocess.run(command, shell=True)
-        elif path_setup_py.is_file():
+
+        if path_setup_py.is_file():
             logger.warning('reformatting "{path_setup_py}"'.format(path_setup_py=path_setup_py))
             command = 'black {path_setup_py}'.format(path_setup_py=path_setup_py)
             subprocess.run(command, shell=True)
