@@ -13,6 +13,7 @@ project_root_dir="${project_root_dir}"
 DO_FLAKE8_TESTS="{{PizzaCutter.flake8_do_tests_in_local_testscript}}"
 DO_MYPY_TESTS="{{PizzaCutter.testscript.do_mypy_tests}}"
 DO_PYTEST="{{PizzaCutter.pytest_do_in_local_testscript}}"
+DO_BLACK="{{PizzaCutter.auto_black_files}}"
 # cleanup on cntrl-c
 trap cleanup EXIT
 
@@ -23,6 +24,10 @@ function pytest_loop {
     while true; do
         banner "Project Root Dir: ${project_root_dir}"
         cleanup
+
+        if [ "${DO_BLACK}" == "True" ]; then
+          if ! run_black; then continue; fi
+        fi
 
         # we prefer to run tests on its own, not within pytest, due to shaky and outdated pytest plugins
         if [ "${DO_FLAKE8_TESTS}" == "True" ]; then

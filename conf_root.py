@@ -132,6 +132,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # #########################################################
         # ### black settings
         # #########################################################
+        self.black_auto_in_local_testscript: bool = False
+        self.black_show_badge: bool = self.black_auto_in_local_testscript
         self.requirements_test.append('black ; platform_python_implementation != "PyPy"')
         self.requirements_test.append('black==19.3b0 ; platform_python_implementation == "PyPy"')
         self.black_line_length: int = 88
@@ -569,6 +571,12 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.black_target_versions}}'] = str(self.black_target_versions)
         self.pizza_cutter_patterns['{{PizzaCutter.black_include_regexp}}'] = self.black_include_regexp
         self.pizza_cutter_patterns['{{PizzaCutter.black_exclude_regexp}}'] = self.black_exclude_regexp
+        self.pizza_cutter_patterns['{{PizzaCutter.auto_black_files}}'] = str(self.black_auto_in_local_testscript)
+
+        if self.black_show_badge:
+            self.pizza_cutter_patterns['{{PizzaCutter.|black|}}'] = '|black|'
+        else:
+            self.pizza_cutter_patterns['{{PizzaCutter.|black|}}'] = ''
 
     # ############################################################################
     # setup.py settings
@@ -875,9 +883,14 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         text = text.replace('{{\PizzaCutter', '{{PizzaCutter')
         path_rst_target_file.write_text(text)
 
-        # black setup.py
+        # black files if needed
+        # we guess that if setup.py exists, we are in the final package
         path_setup_py = self.path_project_dir / 'setup.py'
-        if path_setup_py.is_file():
+        if path_setup_py.is_file() and self.black_auto_in_local_testscript:
+            path_black = self.path_project_dir / '**/*.py'
+            command = 'black {path_black}'.format(path_black=path_black)
+            subprocess.run(command, shell=True)
+        elif path_setup_py.is_file():
             logger.warning('reformatting "{path_setup_py}"'.format(path_setup_py=path_setup_py))
             command = 'black {path_setup_py}'.format(path_setup_py=path_setup_py)
             subprocess.run(command, shell=True)

@@ -1,4 +1,4 @@
-|travis_build| |license| {{PizzaCutter.|jupyter| }}{{PizzaCutter.|pypi|}}
+|travis_build| |license| {{PizzaCutter.|jupyter| }}{{PizzaCutter.|pypi|}} {{PizzaCutter.|black|}}
 
 |codecov| |better_code| |cc_maintain| |cc_issues| |cc_coverage| |snyk|
 
@@ -36,3 +36,6 @@
 
 .. |snyk| image:: https://img.shields.io/snyk/vulnerabilities/github/{{PizzaCutter.repository_slug}}
    :target: https://snyk.io/test/github/{{PizzaCutter.repository_slug}}
+
+.. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
