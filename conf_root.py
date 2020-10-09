@@ -230,7 +230,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                                                    deploy_sdist=True, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8-dev', build_test=True, mypy_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9-dev', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy3', build_test=True, mypy_test=False,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
