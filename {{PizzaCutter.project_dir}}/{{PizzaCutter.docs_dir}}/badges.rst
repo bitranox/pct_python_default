@@ -4,7 +4,7 @@
 
 
 .. |travis_build| image:: https://img.shields.io/travis/{{PizzaCutter.repository_slug}}/master.svg
-   :target: https://travis-ci.org/{{PizzaCutter.repository_slug}}
+   :target: https://travis-ci.com/{{PizzaCutter.repository_slug}}
 
 .. |license| image:: https://img.shields.io/github/license/webcomics/pywine.svg
    :target: http://en.wikipedia.org/wiki/MIT_License
