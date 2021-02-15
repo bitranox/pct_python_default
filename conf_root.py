@@ -237,11 +237,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy3', build_test=True, mypy_test=False,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
 
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.8', build_test=True, mypy_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.9', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.8', build_test=True, mypy_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.9', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.8', build_test=True, mypy_test=True,
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.9', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
 
         # ### .docs Settings
