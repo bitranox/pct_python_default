@@ -1,9 +1,9 @@
     - os: osx
       if: {{PizzaCutter.travis.osx.condition}}
       language: sh
-      name: "macOS 10.15.4"
+      name: "macOS 10.15.7"
       python: "3.8"
-      osx_image: xcode11.5
+      osx_image: xcode12.2
       env:
         # on osx pip and python points to python 2.7 - therefore we have to use pip3 and python3 here
         - cPREFIX=""				# prefix before commands - used for wine, there the prefix is "wine"
