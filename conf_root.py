@@ -400,18 +400,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         """
 
-        self.url = 'https://github.com/{github_account}/{project_name}'.format(github_account=self.github_account, project_name=self.project_name)
-        self.github_master = 'git+https://github.com/{github_account}/{project_name}.git'.format(
-            github_account=self.github_account,
-            project_name=self.project_name)
+        self.url = f'https://github.com/{self.github_account}/{self.project_name}'
+        self.github_master = f'git+https://github.com/{self.github_account}/{self.project_name}.git'
         self.travis_repo_slug = self.github_account + '/' + self.project_name
-
         # we ned to have a function main_commandline in module module_name - see examples
-        self.setup_entry_points = {'console_scripts': ['{shell_command} = {package_dir}.{cli_module}:{cli_method}'.format(
-            shell_command=self.shell_command,
-            package_dir=self.package_dir,
-            cli_module=self.cli_module,
-            cli_method=self.cli_method)]}  # type: Dict[str, List[str]]
+        self.setup_entry_points = {'console_scripts': [f'{self.shell_command} = {self.package_dir}.{self.cli_module}:{self.cli_method}']}
 
         if self.is_typed_package:
             self.setup_included_files.append('py.typed')
@@ -617,7 +610,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                  '{{PizzaCutter.project_dir}}/travis_addons{{PizzaCutter.option.no_copy}}/travis_template_wine_addon.yml').read_text()
 
         # travis rst_include (rebuild Readme File)
-        self.pizza_cutter_patterns['{{PizzaCutter.travis.rst_include_source}}'] = './{}/README_template.rst'.format(self.docs_dir)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.rst_include_source}}'] = f'./{self.docs_dir}/README_template.rst'
         self.pizza_cutter_patterns['{{PizzaCutter.travis.rst_include_target}}'] = './README.rst'
 
     # ############################################################################
@@ -641,8 +634,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             l_secrets.append(str_secret)
             self.pizza_cutter_patterns['{{PizzaCutter.travis.secrets}}'] = '\n'.join(l_secrets)
             if not self.project_name.startswith('pct_python_default_'):
-                logger.info('Project {project}: set encrypted environment variable "{env_var_name}"'.format(
-                    project=self.project_name, env_var_name=env_var_name))
+                logger.info(f'Project {self.project_name}: set encrypted environment variable "{env_var_name}"')
 
     # ############################################################################
     # .travis Linux Matrix settings
@@ -725,7 +717,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         l_python_paths: List[str] = list()
         for python_path in self.testscript_additional_pythonpaths:
             if not pathlib.Path(python_path).is_dir():
-                logger.warning('PYTHONPATH "{python_path}" does not exist, skipping'.format(python_path=python_path))
+                logger.warning(f'PYTHONPATH "{python_path}" does not exist, skipping')
             l_python_paths.append(add_python_path_bash_command.format(python_path=python_path))
         python_paths = '\n'.join(l_python_paths)
         self.pizza_cutter_patterns['# {{PizzaCutter.testscript.append_additional_python_paths}}'] = python_paths
@@ -735,7 +727,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         l_mypy_paths: List[str] = list()
         for mypy_path in self.testscript_additional_mypy_paths:
             if not mypy_path.is_dir():
-                logger.warning('MYPYPATH "{mypy_path}" does not exist, skipping'.format(mypy_path=mypy_path))
+                logger.warning(f'MYPYPATH "{mypy_path}" does not exist, skipping')
             l_mypy_paths.append(add_mypy_path_bash_command.format(mypy_path=mypy_path))
         mypy_paths = '\n'.join(l_mypy_paths)
         self.pizza_cutter_patterns['# {{PizzaCutter.testscript.append_additional_mypy_paths}}'] = mypy_paths
@@ -745,8 +737,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         l_mypy_root_paths: List[str] = list()
         for mypy_root_path in self.testscript_additional_mypy_root_paths:
             if not mypy_root_path.is_dir():
-                logger.warning('we can not add the immediate subdirs to MYPYPATH, because "{mypy_root_path}" does not exist, skipping'.format(
-                    mypy_root_path=mypy_root_path))
+                logger.warning(f'we can not add the immediate subdirs to MYPYPATH, because "{mypy_root_path}" does not exist, skipping')
             l_mypy_root_paths.append(add_mypy_root_path_bash_command.format(mypy_root_path=mypy_root_path))
         mypy_root_paths = '\n'.join(l_mypy_root_paths)
         self.pizza_cutter_patterns['# {{PizzaCutter.testscript.append_additional_mypy_paths_from_root_dir}}'] = mypy_root_paths
@@ -784,7 +775,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
     # ############################################################################
     def setup_docs_installation_pypi(self):
         if self.is_pypi_package:
-            doc_string = '# for the latest Release on pypi:\n    {project_name}\n'.format(project_name=self.project_name)
+            doc_string = f'# for the latest Release on pypi:\n    {self.project_name}\n'
             self.pizza_cutter_patterns['{{PizzaCutter.docs.pypi_requirements}}'] = doc_string
             self.pizza_cutter_patterns['{{PizzaCutter.docs.include_installation_via_pypi}}'] = '.. include:: ./installation_via_pypi.rst'
         else:
@@ -880,9 +871,9 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         path_rst_source_file = self.path_project_dir / self.docs_dir / 'README_template.rst'
         path_rst_target_file = self.path_project_dir / 'README.rst'
         rst_include.rst_inc(source=path_rst_source_file, target=path_rst_target_file)
-        # replace "{{\PizzaCutter" with "{{PizzaCutter" - we use it in docs, so it will not be replaced by accident
+        # replace "{{\\PizzaCutter" with "{{PizzaCutter" - we use it in docs, so it will not be replaced by accident
         text = path_rst_target_file.read_text()
-        text = text.replace('{{\PizzaCutter', '{{PizzaCutter')
+        text = text.replace('{{\\PizzaCutter', '{{PizzaCutter')
         path_rst_target_file.write_text(text)
 
         # black files if needed
@@ -891,12 +882,12 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         if path_setup_py.is_file() and self.black_auto_in_local_testscript:
             path_black = self.path_project_dir / '**/*.py'
-            command = 'black {path_black}'.format(path_black=path_black)
+            command = f'black {path_black}'
             subprocess.run(command, shell=True)
 
         if path_setup_py.is_file():
-            logger.warning('reformatting "{path_setup_py}"'.format(path_setup_py=path_setup_py))
-            command = 'black {path_setup_py}'.format(path_setup_py=path_setup_py)
+            logger.warning(f'reformatting "{path_setup_py}"')
+            command = f'black {path_setup_py}'
             subprocess.run(command, shell=True)
 
     # TODO: make external module in order to parse click help for sub commands / groups
