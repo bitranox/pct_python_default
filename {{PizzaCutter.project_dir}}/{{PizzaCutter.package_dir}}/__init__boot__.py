@@ -1,27 +1,15 @@
 # STDLIB
 import os
+import pathlib
 import sys
 
-name = '{{PizzaCutter.name}}'
-title = '{{PizzaCutter.title}}'
-version = '{{PizzaCutter.version}}'
-url = '{{PizzaCutter.url}}'
-author = '{{PizzaCutter.author}}'
-author_email = '{{PizzaCutter.author_email}}'
-shell_command = '{{PizzaCutter.shell_command}}'
+"""
+        set the syspath accordingly, if pytest or doctest is running
+        this is needed for local tests 
+        this should be the first module which is loaded by __init__.py to avoid frozen or partially initialized modules.
+        no other module should import or use this module, again to avoid frozen or partially initialized modules.
 
-
-def print_info() -> None:
-    print("""\
-
-Info for {{PizzaCutter.project_name}}:
-
-    {{PizzaCutter.title}}
-
-    Version : {{PizzaCutter.version}}
-    Url     : {{PizzaCutter.url}}
-    Author  : {{PizzaCutter.author}}
-    Email   : {{PizzaCutter.author_email}}""")
+"""
 
 
 def is_doctest_running() -> bool:
@@ -61,3 +49,20 @@ def is_doctest_in_arg_string(arg_string: str) -> bool:
         return True
     else:
         return False
+
+
+def add_path_to_syspath() -> None:
+    """
+    >>> add_path_to_syspath()
+    """
+    path_to_append = pathlib.Path(__file__).resolve().parent
+    sys_paths_resolved = [pathlib.Path(path).resolve() for path in sys.path]
+    if path_to_append not in sys_paths_resolved:
+        sys.path.append(str(path_to_append))
+
+
+if is_doctest_running():
+    """
+    we need to add the path to syspath for pytest and doctest
+    """
+    add_path_to_syspath()

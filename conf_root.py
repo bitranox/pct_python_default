@@ -125,7 +125,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # W503 and E203 are disabled for black, see : https://black.readthedocs.io/en/stable/the_black_code_style.html
         # F401, unused imports
         self.flake8_ignores: List[str] = ['E123', 'E203', 'E402', 'F401', 'F403', 'F405', 'W503']
-        self.flake8_max_line_length: int = 160
+        self.flake8_max_line_length: int = 88
         self.flake8_max_complexity: int = 10
         self.flake8_exclude: List[str] = self.common_excludes
 
@@ -147,7 +147,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # #########################################################
 
         self.mypy_strict_options: List[str] = ['--strict', '--warn-unused-ignores', '--implicit-reexport', '--follow-imports=silent']
-        self.mypy_strict_options_follow_imports: List[str] = ['--strict', '--no-warn-unused-ignores', '--implicit-reexport', '--follow-imports=normal']
+        self.mypy_strict_options_follow_imports: List[str] = ['--strict', '--no-warn-unused-ignores', '--implicit-reexport', '--follow-imports=normal', '--ignore-missing-imports']
 
         self.mypy_do_tests_in_local_testscript = True
         self.mypy_do_tests_in_travis = True
@@ -533,7 +533,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.testscript.do_coverage}}'] = str(self.coverage_do_local_testscript)
 
         if self.coverage_do_local_testscript:
-            coverage_option = ''.join(['--cov=', self.package_name])
+            # coverage_option = '--cov={package_name} --cov-config=.coveragerc'.format(package_name=self.package_name)
+            # since not all modules were discovered, we use the directory - this seems to work
+            # --cov-config=.coveragerc
+            coverage_option = '--cov="${project_root_dir}" --cov-config=.coveragerc'
         else:
             coverage_option = ''
         self.pizza_cutter_patterns['{{PizzaCutter.testscript.pytest_coverage_option}}'] = coverage_option
@@ -870,7 +873,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         path_rst_source_file = self.path_project_dir / self.docs_dir / 'README_template.rst'
         path_rst_target_file = self.path_project_dir / 'README.rst'
-        rst_include.rst_inc(source=path_rst_source_file, target=path_rst_target_file)
+        rst_include.lib_main.rst_inc(source=path_rst_source_file, target=path_rst_target_file)
         # replace "{{\\PizzaCutter" with "{{PizzaCutter" - we use it in docs, so it will not be replaced by accident
         text = path_rst_target_file.read_text()
         text = text.replace('{{\\PizzaCutter', '{{PizzaCutter')
