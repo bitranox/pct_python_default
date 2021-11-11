@@ -5,7 +5,7 @@ import sys
 
 """
         set the syspath accordingly, if pytest or doctest is running
-        this is needed for local tests 
+        this is needed for local tests
         this should be the first module which is loaded by __init__.py to avoid frozen or partially initialized modules.
         no other module should import or use this module, again to avoid frozen or partially initialized modules.
 
