@@ -1,10 +1,10 @@
 # if doctest or pytest is running, set paths accordingly
-from . import __init__boot__   # noqa
+from . import __init__pytest__paths__   # noqa
 
 # put Your imports here
 
-# this needs to be after Your imports, otherwise we would create circular import on the cli script,
-# which is reading some values for the __init__conf__
+# __init__conf__ needs to be imported after Your imports, otherwise we would create circular import on the cli script,
+# which is reading some values from __init__conf__
 from . import __init__conf__
 __title__ = __init__conf__.title
 __version__ = __init__conf__.version
