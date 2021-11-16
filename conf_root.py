@@ -975,12 +975,12 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         if path_source_file.is_file():
             with open(str(path_source_file), 'r', encoding='utf-8-sig') as f_sourcefile:
                 with open(str(path_temp_file), 'w', encoding='utf-8') as f_temp_file:
-                    f_temp_file.write('.. code-block:: bash\n\n')
+                    f_temp_file.write('.. code-block::\n\n')
                     for cnt, source_line in enumerate(f_sourcefile):
                         f_temp_file.write(('   ' + source_line).rstrip() + '\n')
         else:
             with open(str(path_temp_file), 'w') as f_temp_file:
-                f_temp_file.write('.. code-block:: bash\n\n    there are no commandline options\n')
+                f_temp_file.write('.. code-block::\n\n    there are no commandline options\n')
 
         if path_target_file == path_source_file:
             if path_source_file.exists():
