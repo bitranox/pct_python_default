@@ -1,7 +1,7 @@
 - Before You start, its highly recommended to update pip and setup tools:
 
 
-.. code-block:: bash
+.. code-block::
 
     python -m pip --upgrade pip
     python -m pip --upgrade setuptools
@@ -12,14 +12,14 @@
 - to install the latest version from github via pip:
 
 
-.. code-block:: bash
+.. code-block::
 
     python -m pip install --upgrade git+https://github.com/{{PizzaCutter.repository_slug}}.git
 
 
 - include it into Your requirements.txt:
 
-.. code-block:: bash
+.. code-block::
 
     # Insert following line in Your requirements.txt:
     {{PizzaCutter.docs.pypi_requirements}}{{PizzaCutter.option.delete_line_if_empty}}
@@ -32,7 +32,7 @@
 
 - to install the latest development version from source code:
 
-.. code-block:: bash
+.. code-block::
 
     # cd ~
     $ git clone https://github.com/{{PizzaCutter.repository_slug}}.git
