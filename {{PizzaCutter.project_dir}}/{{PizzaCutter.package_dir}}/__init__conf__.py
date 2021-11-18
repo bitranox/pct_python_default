@@ -1,4 +1,4 @@
-# ## CONFIG
+# CONF
 
 name = '{{PizzaCutter.name}}'
 title = '{{PizzaCutter.title}}'
