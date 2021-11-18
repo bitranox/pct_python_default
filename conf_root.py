@@ -873,7 +873,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         path_rst_source_file = self.path_project_dir / self.docs_dir / 'README_template.rst'
         path_rst_target_file = self.path_project_dir / 'README.rst'
-        rst_include.lib_main.rst_inc(source=path_rst_source_file, target=path_rst_target_file)
+        rst_include.rst_inc(source=path_rst_source_file, target=path_rst_target_file)
         # replace "{{\\PizzaCutter" with "{{PizzaCutter" - we use it in docs, so it will not be replaced by accident
         text = path_rst_target_file.read_text()
         text = text.replace('{{\\PizzaCutter', '{{PizzaCutter')
