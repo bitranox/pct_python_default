@@ -1,0 +1,9 @@
+          - os: windows-latest
+            python-version: 3.9
+            env:
+              cEXPORT: "SET"
+              BUILD_DOCS: "{{PizzaCutter.gha.windows.build_docs}}"
+              DEPLOY_SDIST: "{{PizzaCutter.gha.windows.deploy_sdist}}"
+              DEPLOY_WHEEL: "{{PizzaCutter.gha.windows.deploy_wheel}}"
+              DEPLOY_TEST: "{{PizzaCutter.gha.windows.build_test}}"
+              MYPY_DO_TESTS: "{{PizzaCutter.gha.windows.mypy_test}}"
