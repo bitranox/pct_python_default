@@ -1,10 +1,9 @@
-|travis_build| |license| {{PizzaCutter.|jupyter| }}{{PizzaCutter.|pypi|}} {{PizzaCutter.|black|}}
+{{PizzaCutter.docs.build_badge}}|license| {{PizzaCutter.|jupyter| }}{{PizzaCutter.|pypi|}} {{PizzaCutter.|black|}}
 
 |codecov| |better_code| |cc_maintain| |cc_issues| |cc_coverage| |snyk|
 
 
-.. |travis_build| image:: https://img.shields.io/travis/{{PizzaCutter.repository_slug}}/master.svg
-   :target: https://travis-ci.com/{{PizzaCutter.repository_slug}}
+{{PizzaCutter.docs.build_badge_link}}
 
 .. |license| image:: https://img.shields.io/github/license/webcomics/pywine.svg
    :target: http://en.wikipedia.org/wiki/MIT_License

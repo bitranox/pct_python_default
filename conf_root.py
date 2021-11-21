@@ -279,6 +279,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.docs_badges_with_jupiter = False
         # I would suggest '100%', 'good', 'some', 'progressing'
         self.docs_code_coverage_bragging = '100%'
+        self.docs_show_travis_badge = False
+        self.docs_show_gha_badge = True
 
         # ### requirements_test.txt Settings
         # add here the requirements which will be needed for local or travis testing
@@ -961,6 +963,22 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             tested_under = ''
 
         self.pizza_cutter_patterns['{{PizzaCutter.docs.test_info}}'] = ''.join([msg_code_coverage, msg_style_checking, msg_mypy_tests, tested_under])
+
+        self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge}}'] = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge_link}}'] = ''
+
+        if self.docs_show_travis_badge:
+            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge}}'] = '|build_badge| '
+            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge_link}}'] = """
+.. |build_badge| image:: https://img.shields.io/travis/{{PizzaCutter.repository_slug}}/master.svg
+   :target: https://travis-ci.com/{{PizzaCutter.repository_slug}}
+"""
+        elif self.docs_show_gha_badge:
+            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge}}'] = '|build_badge| '
+            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge_link}}'] = """
+.. |build_badge| image:: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/python-tests.yml/badge.svg
+   :target: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/python-tests.yml
+"""
 
 # #############################################################################################################################################################
 # Hooks
