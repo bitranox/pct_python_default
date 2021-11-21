@@ -228,8 +228,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.travis_osx_matrix_only_on_tagged_builds = False
         self.travis_osx_matrix_build_docs = False
         self.travis_osx_matrix_mypy_test = True
-        self.gha_osx_matrix_deploy_sdist = False
-        self.gha_osx_matrix_deploy_wheel = False
+
+        # ### GHA osx Test Matrix
+        self.gha_osx_matrix_deploy_sdist = True
+        self.gha_osx_matrix_deploy_wheel = True
         self.gha_osx_matrix_build_test = True
         self.gha_osx_matrix_only_on_tagged_builds = False
         self.gha_osx_matrix_build_docs = False
@@ -260,17 +262,17 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # ### Github Actions Linux Test Matrix
         self.gha_linux_test_matrix: List[TravisLinuxTestMatrix] = list()
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.10.0', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True))
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy-3.8', build_test=True, mypy_test=False,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
 
         # ### .docs Settings
         # if to show badge for jupyter
