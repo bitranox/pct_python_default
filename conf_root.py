@@ -873,25 +873,47 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
     def setup_docs_python_test_info(self) -> None:
         # supports python 3.6-3.8, pypy3 and possibly other dialects.
         # tested for python 3.6, 3.7, 3.8, 3.8-dev, pypy3
-        def get_linux_versions():
+        def get_travis_linux_versions():
             linux_versions: List[str] = list()
             for travis_linux_test in self.travis_linux_test_matrix:
                 if travis_linux_test.python_version not in linux_versions:
                     linux_versions.append(travis_linux_test.python_version)
             return linux_versions
 
-        def get_archs():
+        def get_travis_archs():
             archs: List[str] = list()
             for travis_linux_test in self.travis_linux_test_matrix:
                 if travis_linux_test.arch not in archs:
                     archs.append(travis_linux_test.arch)
             return archs
 
-        str_python_test_info = 'tested on linux "{travis_python_version}" with python {versions} - architectures: {architectures}'.format(
-            travis_python_version=self.travis_linux_version,
-            versions=', '.join(get_linux_versions()),
-            architectures=', '.join(get_archs()),
-            )
+        def get_gha_linux_versions():
+            linux_versions: List[str] = list()
+            for gha_linux_test in self.gha_linux_test_matrix:
+                if gha_linux_test.python_version not in linux_versions:
+                    linux_versions.append(gha_linux_test.python_version)
+            return linux_versions
+
+        def get_gha_archs():
+            archs: List[str] = list()
+            for gha_linux_test in self.gha_linux_test_matrix:
+                if gha_linux_test.arch not in archs:
+                    archs.append(gha_linux_test.arch)
+            return archs
+
+        if self.docs_show_travis_badge:
+            str_python_test_info = 'tested on linux "{travis_python_version}" with python {versions} - architectures: {architectures}'.format(
+                travis_python_version=self.travis_linux_version,
+                versions=', '.join(get_travis_linux_versions()),
+                architectures=', '.join(get_travis_archs()),
+                )
+
+        if self.docs_show_gha_badge:
+            str_python_test_info = 'tested on recent linux with python {versions} - architectures: {architectures}'.format(
+                versions=', '.join(get_gha_linux_versions()),
+                architectures=', '.join(get_gha_archs()),
+                )
+
         self.pizza_cutter_patterns['{{PizzaCutter.docs.python_test_info}}'] = str_python_test_info
         self.pizza_cutter_patterns['{{PizzaCutter.docs.python_required}}'] = self.setup_minimal_python_version_required
 
@@ -956,7 +978,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         if self.travis_wine_tests or self.gha_wine_tests:
             l_tested_under.append('Wine')
 
-        test_link = ' <https://travis-ci.org/{travis_repo_slug}>`_, automatic daily builds and monitoring'.format(travis_repo_slug=self.travis_repo_slug)
+        if self.docs_show_travis_badge:
+            test_link = f' <https://travis-ci.org/{self.travis_repo_slug}>`_, automatic daily builds and monitoring'
+        elif self.docs_show_gha_badge:
+            test_link = f' <https://github.com/{self.travis_repo_slug}/actions/workflows/python-tests.yml>`_, automatic daily builds and monitoring'
+
         if l_tested_under:
             tested_under = ''.join(['tested under `', ', '.join(l_tested_under), test_link])
         else:
