@@ -7,15 +7,13 @@ Changelog
 
 please check `SemVer <https://semver.org/>`_ for more information on versioning
 
-todo:
-    - github integration
-    - multiple bdists to pypi
-    - arm64
 
-0.1.7a
+1.0.0
 -------
-2020-07-30 : release
-
+2021-11-22 : Major Release
+    - implement github actions
+    - fix "setup.py test"
+    - implement check for test environment on __init__
 
 0.1.6
 -------

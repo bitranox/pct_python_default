@@ -9,7 +9,7 @@
    :target: http://en.wikipedia.org/wiki/MIT_License
 
 .. |jupyter| image:: https://mybinder.org/badge_logo.svg
- :target: https://mybinder.org/v2/gh/{{PizzaCutter.repository_slug}}/master?filepath={{PizzaCutter.repository}}.ipynb
+   :target: https://mybinder.org/v2/gh/{{PizzaCutter.repository_slug}}/master?filepath={{PizzaCutter.repository}}.ipynb
 
 .. for the pypi status link note the dashes, not the underscore !
 .. |pypi| image:: https://img.shields.io/pypi/status/{{PizzaCutter.repository_dashed}}?label=PyPI%20Package

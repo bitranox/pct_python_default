@@ -4,8 +4,9 @@ import logging
 import pathlib
 import subprocess
 import sys
-from typing import List, Dict, Optional
+from typing import List, Optional
 
+import lib_log_utils
 from pizzacutter import PizzaCutterConfigBase
 from pizzacutter import find_version_number_in_file
 
@@ -23,7 +24,11 @@ class TravisLinuxTestMatrix(object):
                  build_test: bool,
                  only_on_tagged_builds: bool,
                  build_docs: bool,
-                 mypy_test: bool):
+                 mypy_test: bool,
+                 do_setup_install: bool,
+                 do_setup_install_test: bool,
+                 do_cli_test: bool
+                 ):
         self.arch = arch
         self.python_version = python_version
         self.deploy_sdist = deploy_sdist
@@ -32,6 +37,9 @@ class TravisLinuxTestMatrix(object):
         self.only_on_tagged_builds = only_on_tagged_builds
         self.build_docs = build_docs
         self.mypy_test = mypy_test
+        self.do_setup_install = do_setup_install
+        self.do_setup_install_test = do_setup_install_test
+        self.do_cli_test = do_cli_test
 
 
 class PizzaCutterConfig(PizzaCutterConfigBase):
@@ -214,12 +222,16 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.travis_windows_matrix_build_docs = False
         self.travis_windows_matrix_mypy_test = True
 
+        # ### GHA windows Test Matrix
         self.gha_windows_matrix_deploy_sdist = False
         self.gha_windows_matrix_deploy_wheel = False
         self.gha_windows_matrix_build_test = False
         self.gha_windows_matrix_only_on_tagged_builds = False
         self.gha_windows_matrix_build_docs = False
         self.gha_windows_matrix_mypy_test = True
+        self.gha_windows_matrix_setup_install = True
+        self.gha_windows_matrix_setup_install_test = True
+        self.gha_windows_matrix_cli_test = True
 
         # ### TRAVIS osx Test Matrix
         self.travis_osx_matrix_deploy_sdist = False
@@ -236,43 +248,61 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.gha_osx_matrix_only_on_tagged_builds = False
         self.gha_osx_matrix_build_docs = False
         self.gha_osx_matrix_mypy_test = True
+        self.gha_osx_matrix_setup_install = True
+        self.gha_osx_matrix_setup_install_test = True
+        self.gha_osx_matrix_cli_test = True
 
         # ### TRAVIS Linux Test Matrix
         self.travis_linux_test_matrix: List[TravisLinuxTestMatrix] = list()
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True,
+                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9-dev', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy3', build_test=True, mypy_test=False,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
 
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.9', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.9', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.9', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False))
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
 
         # ### Github Actions Linux Test Matrix
         self.gha_linux_test_matrix: List[TravisLinuxTestMatrix] = list()
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', build_test=True, mypy_test=True,
-                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
-                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
-                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9', build_test=True, mypy_test=True,
-                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.10.0', build_test=True, mypy_test=True,
-                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True))
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True,
+                                                                do_setup_install=True, do_setup_install_test=True, do_cli_test=True))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy-3.8', build_test=True, mypy_test=False,
-                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False))
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
 
         # ### .docs Settings
         # if to show badge for jupyter
@@ -281,8 +311,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.docs_badges_with_jupiter = False
         # I would suggest '100%', 'good', 'some', 'progressing'
         self.docs_code_coverage_bragging = '100%'
-        self.docs_show_travis_badge = False
-        self.docs_show_gha_badge = True
+        # valid choices for CI Badge : 'travis' or 'gha'
+        self.docs_show_which_ci_badge: str = 'gha'
 
         # ### requirements_test.txt Settings
         # add here the requirements which will be needed for local or travis testing
@@ -765,6 +795,9 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                 build_test = matrix_item.build_test
                 python_version = matrix_item.python_version
                 mypy_test = matrix_item.mypy_test and self.mypy_do_tests_in_gha
+                do_setup_install = matrix_item.do_setup_install
+                do_setup_install_test = matrix_item.do_setup_install_test
+                do_cli_test = matrix_item.do_cli_test
 
                 gha_linux_matrix_item = \
                     f"""
@@ -776,6 +809,9 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
               DEPLOY_WHEEL: "{deploy_wheel}"
               DEPLOY_TEST: "{build_test}"
               MYPY_DO_TESTS: "{mypy_test}"
+              DO_SETUP_INSTALL: "{do_setup_install}"
+              DO_SETUP_INSTALL_TEST: "{do_setup_install_test}"
+              DO_CLI_TEST: "{do_cli_test}"
 """
 
                 l_gha_linux_tests.append(gha_linux_matrix_item)
@@ -809,6 +845,9 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.build_docs}}'] = str(self.gha_windows_matrix_build_docs)
         self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.mypy_test}}'] = str(self.gha_windows_matrix_mypy_test and self.mypy_do_tests_in_gha)
 
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.setup.py.install}}'] = str(self.gha_windows_matrix_setup_install)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.setup.py.test}}'] = str(self.gha_windows_matrix_setup_install_test)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.cli.test}}'] = str(self.gha_windows_matrix_cli_test)
 
     # ############################################################################
     # .travis Windows Matrix settings
@@ -836,6 +875,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.build_docs}}'] = str(self.gha_osx_matrix_build_docs)
         self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.mypy_test}}'] = str(self.gha_osx_matrix_mypy_test and self.mypy_do_tests_in_gha)
 
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.setup.py.install}}'] = str(self.gha_osx_matrix_setup_install)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.setup.py.test}}'] = str(self.gha_osx_matrix_setup_install_test)
+
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.cli.test}}'] = str(self.gha_osx_matrix_cli_test)
 
     # ############################################################################
     # test_dir/local_testscripts settings
@@ -906,18 +949,20 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                     archs.append(gha_linux_test.arch)
             return archs
 
-        if self.docs_show_travis_badge:
+        str_python_test_info = ''
+        if self.docs_show_which_ci_badge.lower() == 'travis':
             str_python_test_info = 'tested on linux "{travis_python_version}" with python {versions} - architectures: {architectures}'.format(
                 travis_python_version=self.travis_linux_version,
                 versions=', '.join(get_travis_linux_versions()),
                 architectures=', '.join(get_travis_archs()),
                 )
-
-        if self.docs_show_gha_badge:
+        elif self.docs_show_which_ci_badge.lower() == 'gha':
             str_python_test_info = 'tested on recent linux with python {versions} - architectures: {architectures}'.format(
                 versions=', '.join(get_gha_linux_versions()),
                 architectures=', '.join(get_gha_archs()),
                 )
+        else:
+            lib_log_utils.log_warning(f'unsupported parameter self.docs_show_which_ci_badge: {self.docs_show_which_ci_badge}')
 
         self.pizza_cutter_patterns['{{PizzaCutter.docs.python_test_info}}'] = str_python_test_info
         self.pizza_cutter_patterns['{{PizzaCutter.docs.python_required}}'] = self.setup_minimal_python_version_required
@@ -983,10 +1028,24 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         if self.travis_wine_tests or self.gha_wine_tests:
             l_tested_under.append('Wine')
 
-        if self.docs_show_travis_badge:
+        test_link = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge}}'] = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge_link}}'] = ''
+        if self.docs_show_which_ci_badge == 'travis':
             test_link = f' <https://travis-ci.org/{self.travis_repo_slug}>`_, automatic daily builds and monitoring'
-        elif self.docs_show_gha_badge:
+            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge}}'] = '|build_badge| '
+            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge_link}}'] = """
+.. |build_badge| image:: https://img.shields.io/travis/{{PizzaCutter.repository_slug}}/master.svg
+   :target: https://travis-ci.com/{{PizzaCutter.repository_slug}}
+"""
+
+        elif self.docs_show_which_ci_badge == 'gha':
             test_link = f' <https://github.com/{self.travis_repo_slug}/actions/workflows/python-package.yml>`_, automatic daily builds and monitoring'
+            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge}}'] = '|build_badge| '
+            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge_link}}'] = """
+.. |build_badge| image:: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/python-package.yml/badge.svg
+   :target: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/python-package.yml
+"""
 
         if l_tested_under:
             tested_under = ''.join(['tested under `', ', '.join(l_tested_under), test_link])
@@ -994,22 +1053,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             tested_under = ''
 
         self.pizza_cutter_patterns['{{PizzaCutter.docs.test_info}}'] = ''.join([msg_code_coverage, msg_style_checking, msg_mypy_tests, tested_under])
-
-        self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge}}'] = ''
-        self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge_link}}'] = ''
-
-        if self.docs_show_travis_badge:
-            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge}}'] = '|build_badge| '
-            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge_link}}'] = """
-.. |build_badge| image:: https://img.shields.io/travis/{{PizzaCutter.repository_slug}}/master.svg
-   :target: https://travis-ci.com/{{PizzaCutter.repository_slug}}
-"""
-        elif self.docs_show_gha_badge:
-            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge}}'] = '|build_badge| '
-            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge_link}}'] = """
-.. |build_badge| image:: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/python-package.yml/badge.svg
-   :target: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/python-package.yml
-"""
 
 # #############################################################################################################################################################
 # Hooks

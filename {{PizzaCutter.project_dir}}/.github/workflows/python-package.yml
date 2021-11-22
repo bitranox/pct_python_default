@@ -96,13 +96,12 @@ jobs:
         ${{ env.cPIP }} install git+https://github.com/bitranox/lib_cicd_github.git
         lib_cicd_github install
 
-    - name: Debug - Show Colortest and Environment Variable
+    - name: Debug - printenv and colortest
       env:
         # make matrix env variables accessible
         ${{ matrix.env }}
       shell: bash
       run: |
-        log_util --colortest
         # export for current step
         export "BRANCH=$(lib_cicd_github get_branch)"
         # export for subsequent steps
@@ -120,6 +119,7 @@ jobs:
         log_util --level=VERBOSE "runner.os: ${{ runner.os }}"
         log_util --level=VERBOSE "matrix.python-version: ${{ matrix.python-version }}"
         printenv
+        log_util --colortest
 
     - name: Run Tests
       env:
