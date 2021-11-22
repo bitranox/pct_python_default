@@ -288,6 +288,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # add here the requirements which will be needed for local or travis testing
         self.requirements_test.append('coloredlogs')
         self.requirements_test.append('pytest')
+        self.requirements_test.append('pytest-runner')
 
         # ### setup.py Settings
         # include additional package data files here !!!
@@ -365,8 +366,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         if self.pytest_do_local_testscript or self.pytest_do_local_testscript:
             self.requirements_test.append('pytest')
+            self.requirements_test.append('pytest-runner')
         else:
             self.requirements_test.remove('pytest')
+            self.requirements_test.append('pytest-runner')
 
     # ##########################################################################################################################################################
     # replacement patterns
