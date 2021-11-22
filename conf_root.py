@@ -1007,8 +1007,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         elif self.docs_show_gha_badge:
             self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge}}'] = '|build_badge| '
             self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge_link}}'] = """
-.. |build_badge| image:: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/python-tests.yml/badge.svg
-   :target: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/python-tests.yml
+.. |build_badge| image:: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/python-package.yml/badge.svg
+   :target: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/python-package.yml
 """
 
 # #############################################################################################################################################################
