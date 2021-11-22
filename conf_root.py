@@ -134,7 +134,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # #########################################################
         # ### black settings
         # #########################################################
-        self.black_auto_in_local_testscript: bool = False
+        self.black_auto_in_local_testscript: bool = True
         self.black_show_badge: bool = self.black_auto_in_local_testscript
         self.requirements_test.append('black ; platform_python_implementation != "PyPy"')
         self.requirements_test.append('black==19.3b0 ; platform_python_implementation == "PyPy"')
@@ -986,7 +986,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         if self.docs_show_travis_badge:
             test_link = f' <https://travis-ci.org/{self.travis_repo_slug}>`_, automatic daily builds and monitoring'
         elif self.docs_show_gha_badge:
-            test_link = f' <https://github.com/{self.travis_repo_slug}/actions/workflows/python-tests.yml>`_, automatic daily builds and monitoring'
+            test_link = f' <https://github.com/{self.travis_repo_slug}/actions/workflows/python-package.yml>`_, automatic daily builds and monitoring'
 
         if l_tested_under:
             tested_under = ''.join(['tested under `', ', '.join(l_tested_under), test_link])
