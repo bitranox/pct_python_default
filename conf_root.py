@@ -203,6 +203,9 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # #########################################################
         # ### Travis (and Github actions) settings
         # #########################################################
+        # ### Github Tests
+        self.add_github_actions = True
+
         # Travis Linux Version 'bionic', 'xenial', 'trusty', 'precise'
         self.travis_linux_version = 'bionic'
         self.travis_linux_tests = True
@@ -885,7 +888,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
     # ############################################################################
     def setup_testscripts(self):
 
-        # set additional PYTHONPATH's
+        # set additional PYTHONPATH
         add_python_path_bash_command = 'export PYTHONPATH="$(python3 ./testing_tools.py append_directory_to_python_path "{python_path}")"'
         l_python_paths: List[str] = list()
         for python_path in self.testscript_additional_pythonpaths:
@@ -895,7 +898,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         python_paths = '\n'.join(l_python_paths)
         self.pizza_cutter_patterns['# {{PizzaCutter.testscript.append_additional_python_paths}}'] = python_paths
 
-        # set additional MYPYPATH's
+        # set additional MYPYPATH
         add_mypy_path_bash_command = 'export MYPYPATH="$(python3 ./testing_tools.py append_directory_to_python_path "{mypy_path}")"'
         l_mypy_paths: List[str] = list()
         for mypy_path in self.testscript_additional_mypy_paths:
@@ -905,7 +908,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         mypy_paths = '\n'.join(l_mypy_paths)
         self.pizza_cutter_patterns['# {{PizzaCutter.testscript.append_additional_mypy_paths}}'] = mypy_paths
 
-        # set additional MYPYPATH's from a root directory - add all immediate subdirs as mypy path in the testscript
+        # set additional MYPYPATH from a root directory - add all immediate subdirs as mypy path in the testscript
         add_mypy_root_path_bash_command = 'export MYPYPATH="$(python3 ./testing_tools.py append_immediate_subdirs_to_mypy_path "{mypy_root_path}")"'
         l_mypy_root_paths: List[str] = list()
         for mypy_root_path in self.testscript_additional_mypy_root_paths:
@@ -1104,6 +1107,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             logger.warning(f'reformatting "{path_setup_py}"')
             command = f'black {path_setup_py}'
             subprocess.run(command, shell=True)
+
+        if self.add_github_actions is False:
+            (self.path_project_dir / '.github/workflows/python-package.yml').unlink(missing_ok=True)
+
 
     # TODO: make external module in order to parse click help for sub commands / groups
     def create_commandline_help_file(self, path_cli_module: pathlib.Path, path_cli_help_rst_file: pathlib.Path, registered_shell_command: str) -> None:
