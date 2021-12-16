@@ -156,8 +156,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # ### mypy settings
         # #########################################################
 
-        self.mypy_strict_options: List[str] = ['--strict', '--warn-unused-ignores', '--implicit-reexport', '--follow-imports=silent']
-        self.mypy_strict_options_follow_imports: List[str] = ['--strict', '--no-warn-unused-ignores', '--implicit-reexport', '--follow-imports=normal', '--ignore-missing-imports']
+        self.mypy_strict_options: List[str] = ['--strict', '--warn-unused-ignores', '--implicit-reexport', '--follow-imports=silent',
+                                               '--install-types', '--non-interactive']
+        self.mypy_strict_options_follow_imports: List[str] = ['--strict', '--no-warn-unused-ignores', '--implicit-reexport', '--follow-imports=normal',
+                                                              '--ignore-missing-imports', '--install-types', '--non-interactive']
 
         self.mypy_do_tests_in_local_testscript = True
         self.mypy_do_tests_in_travis = True

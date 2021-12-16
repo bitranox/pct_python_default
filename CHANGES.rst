@@ -7,6 +7,10 @@ Changelog
 
 please check `SemVer <https://semver.org/>`_ for more information on versioning
 
+1.0.1b
+-------
+work in progress
+    - add mypy options to install missing types '--install-types'
 
 1.0.0
 -------

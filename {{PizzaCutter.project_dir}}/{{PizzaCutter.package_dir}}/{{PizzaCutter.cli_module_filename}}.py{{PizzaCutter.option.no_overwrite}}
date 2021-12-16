@@ -38,7 +38,7 @@ def info() -> None:
 def cli_main(traceback: Optional[bool] = None) -> None:
     if traceback is not None:
         cli_exit_tools.config.traceback = traceback
-        {{PizzaCutter.main_module}}.main()
+    {{PizzaCutter.main_module}}.main()
 
 
 @cli_main.command('info', context_settings=CLICK_CONTEXT_SETTINGS)
