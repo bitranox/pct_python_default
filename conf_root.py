@@ -211,12 +211,13 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # Travis Linux Version 'bionic', 'xenial', 'trusty', 'precise'
         self.travis_linux_version = 'bionic'
         self.travis_linux_tests = True
-        self.gha_linux_tests = True
         self.travis_osx_tests = True
-        self.gha_osx_tests = True
         self.travis_windows_tests = True
-        self.gha_windows_tests = True
         self.travis_wine_tests = False
+
+        self.gha_linux_tests = True
+        self.gha_osx_tests = True
+        self.gha_windows_tests = True
         self.gha_wine_tests = False
 
         # ### TRAVIS windows Test Matrix
