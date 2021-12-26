@@ -289,6 +289,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                                                    do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
 
         # ### Github Actions Linux Test Matrix
+        self.gha_services: str = ''
         self.gha_linux_test_matrix: List[TravisLinuxTestMatrix] = list()
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', build_test=True, mypy_test=True,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
@@ -822,6 +823,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                 l_gha_linux_tests.append(gha_linux_matrix_item)
 
             self.pizza_cutter_patterns['{{PizzaCutter.gha.linux.tests}}'] = ''.join(l_gha_linux_tests)
+            self.pizza_cutter_patterns['{{PizzaCutter.gha.services}}'] = self.gha_services
 
     # ############################################################################
     # .travis Windows Matrix settings
