@@ -545,9 +545,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             self.pizza_cutter_patterns['{{PizzaCutter.index_entry_jupyter}}'] = ''
 
         if self.is_pypi_package:
-            self.pizza_cutter_patterns['{{PizzaCutter.|pypi|}}'] = '|pypi|'
+            self.pizza_cutter_patterns['{{PizzaCutter.|pypi|}}'] = '|pypi| '
+            self.pizza_cutter_patterns['{{PizzaCutter.|pypi-downloads|}}'] = '|pypi-downloads| '
         else:
             self.pizza_cutter_patterns['{{PizzaCutter.|pypi|}}'] = ''
+            self.pizza_cutter_patterns['{{PizzaCutter.|pypi-downloads|}}'] = ''
 
         self.setup_docs_test_info()
         self.setup_docs_installation_pypi()

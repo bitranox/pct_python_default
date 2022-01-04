@@ -1,4 +1,4 @@
-{{PizzaCutter.docs.build_badge}}|license| {{PizzaCutter.|jupyter| }}{{PizzaCutter.|pypi|}} {{PizzaCutter.|black|}}
+{{PizzaCutter.docs.build_badge}}|license| {{PizzaCutter.|jupyter| }}{{PizzaCutter.|pypi|}}{{PizzaCutter.|pypi-downloads|}}{{PizzaCutter.|black|}}
 
 |codecov| |better_code| |cc_maintain| |cc_issues| |cc_coverage| |snyk|
 
@@ -38,3 +38,7 @@
 
 .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
+
+.. |pypi-downloads| image:: https://img.shields.io/pypi/dm/{{PizzaCutter.repository_dashed}}
+   :target: https://pypi.org/project/{{PizzaCutter.repository_dashed}}/
+   :alt: PyPI - Downloads
