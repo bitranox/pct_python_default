@@ -116,9 +116,13 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                            '.mypy_cache', '.nox', '.tox', '.venv', '_build', 'buck-out']
 
         # #########################################################
+        # ### cli settings
+        # #########################################################
+        self.create_cli_file = True
+
+        # #########################################################
         # ### pytest settings
         # #########################################################
-        # those settings apply to local testscript
         self.pytest_do_travis = True
         self.pytest_do_gha = True
         self.pytest_do_local_testscript = True
@@ -237,7 +241,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.gha_windows_matrix_mypy_test = True
         self.gha_windows_matrix_setup_install = True
         self.gha_windows_matrix_setup_install_test = True
-        self.gha_windows_matrix_cli_test = True
+        self.gha_windows_matrix_cli_test = self.create_cli_file
 
         # ### TRAVIS osx Test Matrix
         self.travis_osx_matrix_deploy_sdist = False
@@ -256,60 +260,71 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.gha_osx_matrix_mypy_test = True
         self.gha_osx_matrix_setup_install = True
         self.gha_osx_matrix_setup_install_test = True
-        self.gha_osx_matrix_cli_test = True
+        self.gha_osx_matrix_cli_test = self.create_cli_file
 
         # ### TRAVIS Linux Test Matrix
+        self.travis_linux_do_cli_test = self.create_cli_file
         self.travis_linux_test_matrix: List[TravisLinuxTestMatrix] = list()
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
-                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False,
-                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
-                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True,
-                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9-dev', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
-                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy3', build_test=True, mypy_test=False,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
-                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
 
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.9', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False,
-                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.9', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False,
-                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.9', build_test=True, mypy_test=True,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False,
-                                                                   do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
 
         # ### Github Actions Linux Test Matrix
         self.gha_services: str = ''
+        self.gha_linux_do_cli_test = True
         self.gha_linux_test_matrix: List[TravisLinuxTestMatrix] = list()
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', build_test=True, mypy_test=True,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
-                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
-                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
-                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9', build_test=True, mypy_test=True,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
-                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.10.0', build_test=True, mypy_test=True,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True,
-                                                                do_setup_install=True, do_setup_install_test=True, do_cli_test=True))
+                                                                do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy-3.8', build_test=True, mypy_test=False,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
-                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=True))
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
 
         # ### .docs Settings
         # if to show badge for jupyter
@@ -666,7 +681,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.setup_python_requires}}'] = '">={}"'.format(self.setup_minimal_python_version_required)
         self.pizza_cutter_patterns['{{PizzaCutter.setup_package_data}}'] = str(self.setup_package_data)
         self.pizza_cutter_patterns['{{PizzaCutter.setup_classifiers}}'] = str(self.setup_classifiers)
-        self.pizza_cutter_patterns['{{PizzaCutter.setup_entry_points}}'] = str(self.setup_entry_points)
+        if self.create_cli_file:
+            self.pizza_cutter_patterns['{{PizzaCutter.setup_entry_points}}'] = str(self.setup_entry_points)
+        else:
+            self.pizza_cutter_patterns['{{PizzaCutter.setup_entry_points}}'] = str(dict())
         self.pizza_cutter_patterns['{{PizzaCutter.setup_zip_safe}}'] = str(self.setup_zip_safe)
 
     # ############################################################################
@@ -1084,14 +1102,20 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         else:
             (self.path_package_dir / 'py.typed').unlink(missing_ok=True)
 
+
         # create documentation
         import rst_include
 
         path_cli_module = self.path_package_dir / (self.cli_module + '.py')
         path_cli_help_rst_file = self.path_project_dir / self.docs_dir / 'commandline_help.rst'
-        self.create_commandline_help_file(path_cli_module=path_cli_module,
-                                          path_cli_help_rst_file=path_cli_help_rst_file,
-                                          registered_shell_command=self.shell_command)
+        if self.create_cli_file:
+            self.create_commandline_help_file(path_cli_module=path_cli_module,
+                                              path_cli_help_rst_file=path_cli_help_rst_file,
+                                              registered_shell_command=self.shell_command)
+        else:
+            path_cli_module.unlink(missing_ok=True)
+            (self.path_project_dir / 'tests/test_cli.py').unlink(missing_ok=True)
+            path_cli_help_rst_file.write_text('there are no cli commands', encoding='utf-8')
 
         path_rst_source_file = self.path_project_dir / self.docs_dir / 'README_template.rst'
         path_rst_target_file = self.path_project_dir / 'README.rst'
@@ -1117,7 +1141,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         if self.add_github_actions is False:
             (self.path_project_dir / '.github/workflows/python-package.yml').unlink(missing_ok=True)
-
 
     # TODO: make external module in order to parse click help for sub commands / groups
     def create_commandline_help_file(self, path_cli_module: pathlib.Path, path_cli_help_rst_file: pathlib.Path, registered_shell_command: str) -> None:
