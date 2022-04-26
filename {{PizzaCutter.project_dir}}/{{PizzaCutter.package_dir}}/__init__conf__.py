@@ -1,3 +1,5 @@
+# CONF
+
 name = '{{PizzaCutter.name}}'
 title = '{{PizzaCutter.title}}'
 version = '{{PizzaCutter.version}}'

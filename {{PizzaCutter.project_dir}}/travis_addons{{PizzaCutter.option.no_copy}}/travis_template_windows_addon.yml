@@ -1,6 +1,7 @@
     - os: windows
+      if: {{PizzaCutter.travis.windows.condition}}
       language: sh
-      name: "Windows Python 3.8"
+      name: "Windows Python 3.9"
 
       # oddly a secure password under env: global: causes that choco fails
       # so we need to put the option : filter_secrets: false
@@ -11,4 +12,9 @@
           - chmod -R 0755 /usr/local/lib_bash
           - chmod -R +x /usr/local/lib_bash/*.sh
           - /usr/local/lib_bash/lib_retry.sh retry choco install python3
-          - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
+          - export PATH="/c/Python310:/c/Python310/Scripts:/c/Python39:/c/Python39/Scripts:/c/Python38:/c/Python38/Scripts:$PATH"
+          - export BUILD_DOCS="{{PizzaCutter.travis.windows.build_docs}}"
+          - export DEPLOY_SDIST="{{PizzaCutter.travis.windows.deploy_sdist}}"
+          - export DEPLOY_WHEEL="{{PizzaCutter.travis.windows.deploy_wheel}}"
+          - export DEPLOY_TEST="{{PizzaCutter.travis.windows.build_test}}"
+          - export MYPY_DO_TESTS="{{PizzaCutter.travis.windows.mypy_test}}"

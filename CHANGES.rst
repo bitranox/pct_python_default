@@ -7,10 +7,17 @@ Changelog
 
 please check `SemVer <https://semver.org/>`_ for more information on versioning
 
-todo:
-    - github integration
-    - multiple bdists to pypi
-    - arm64
+1.0.1b
+-------
+work in progress
+    - add mypy options to install missing types '--install-types'
+
+1.0.0
+-------
+2021-11-22 : Major Release
+    - implement github actions
+    - fix "setup.py test"
+    - implement check for test environment on __init__
 
 0.1.6
 -------

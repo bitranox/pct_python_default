@@ -4,8 +4,9 @@ import logging
 import pathlib
 import subprocess
 import sys
-from typing import List, Dict, Optional
+from typing import List, Optional
 
+import lib_log_utils
 from pizzacutter import PizzaCutterConfigBase
 from pizzacutter import find_version_number_in_file
 
@@ -13,6 +14,32 @@ logger = logging.getLogger()
 FORMAT = '%(levelname)-8s %(message)s'
 logging.basicConfig(format=FORMAT)
 logger.level = logging.INFO
+
+
+class TravisLinuxTestMatrix(object):
+    def __init__(self, arch: str,
+                 python_version: str,
+                 deploy_sdist: bool,
+                 deploy_wheel: bool,
+                 build_test: bool,
+                 only_on_tagged_builds: bool,
+                 build_docs: bool,
+                 mypy_test: bool,
+                 do_setup_install: bool,
+                 do_setup_install_test: bool,
+                 do_cli_test: bool
+                 ):
+        self.arch = arch
+        self.python_version = python_version
+        self.deploy_sdist = deploy_sdist
+        self.deploy_wheel = deploy_wheel
+        self.build_test = build_test
+        self.only_on_tagged_builds = only_on_tagged_builds
+        self.build_docs = build_docs
+        self.mypy_test = mypy_test
+        self.do_setup_install = do_setup_install
+        self.do_setup_install_test = do_setup_install_test
+        self.do_cli_test = do_cli_test
 
 
 class PizzaCutterConfig(PizzaCutterConfigBase):
@@ -37,6 +64,15 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_allow_outside_write = False
         self.pizza_cutter_dry_run = False
         self.pizza_cutter_quiet = False
+
+# ##############################################################################################################################################################
+# Project Configuration - some lists that should only defined in the root configuration
+# append or remove from that lists as needed !
+# ##############################################################################################################################################################
+
+        # ### requirements_test.txt Settings
+        self.requirements_test: List[str] = list()
+
 
 # ##############################################################################################################################################################
 # Project Configuration - single point for all configuration of the project
@@ -71,43 +107,70 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.is_pypi_package = False
         self.pypi_account = 'your_pypi_account'
 
-        # ### pytest settings
-        # (travis and local run_testloop.sh, via conftest.py)
-        self.do_pytest_pep8_tests = True
-        self.do_pytest_mypy_tests = True
-        self.do_code_coverage_codecov = True
-        # additional args for mypy and pycodestyle when running pytest setup.py test, etc.
-        # set in conftest.py - usually You dont need to add anything here
-        # only append or delete from this list in inherited configs
-        self.pytest_mypy_args: List[str] = list()
-        # only append or delete from this list in inherited configs
-        self.pytest_pycodestyle_args: List[str] = list()
-        # ### additional args for mypy and pycodestyle when running pytest setup.py test, etc.
-        # ### set in conftest.py - usually You dont need to add anything here
-        # only append or delete from this list in inherited configs
-        # self.pytest_mypy_args.append('--example')
-        # only append or delete from this list in inherited configs
-        # self.pytest_pycodestyle_args.append('--example')
-
-        # to upload code climate code coverage, You need to create the secret CC_TEST_REPORTER_ID
-        self.do_code_coverage_code_climate = True
         # additional pythonpaths to pass to the run_testloop.sh (lib_bash_functions.sh)
         self.testscript_additional_pythonpaths: List[str] = list()          # only append or delete from this list in inherited configs
         # for a list of codestyle options see : https://pycodestyle.pycqa.org/en/latest/intro.html#error-codes
-        self.pytest_pycodestyle_ignores: List[str] = ['E402', 'E123']       # only append or delete from this list in inherited configs
-        self.pytest_pycodestyle_max_line_length: int = 160
 
-        # ### local testscript settings
+        # common excludes - usually excluded directories for different tools
+        self.common_excludes: List[str] = ['.git', '__pycache__', 'build', 'dist', '.eggs', '.hg',
+                                           '.mypy_cache', '.nox', '.tox', '.venv', '_build', 'buck-out']
 
-        # Options to pass in the testloop to mypy strict
-        # only append or delete from this list in inherited configs
-        # we warn for unused imports on our own module
-        self.testscript_mypy_strict_options: List[str] = ['--strict', '--warn-unused-ignores', '--implicit-reexport', '--follow-imports=silent']
+        # #########################################################
+        # ### cli settings
+        # #########################################################
+        self.create_cli_file = True
 
-        # Options to pass in the testloop to mypy strict with imports
-        # only append or delete from this list in inherited configs
-        # we do NOT warn for unused imports on imported modules
-        self.testscript_mypy_strict_with_import_options: List[str] = ['--strict', '--no-warn-unused-ignores', '--implicit-reexport', '--follow-imports=normal']
+        # #########################################################
+        # ### pytest settings
+        # #########################################################
+        self.pytest_do_travis = True
+        self.pytest_do_gha = True
+        self.pytest_do_local_testscript = True
+        self.pytest_additional_args: List[str] = list()
+        self.pytest_collect_ignores: List[str] = list()
+
+        # #########################################################
+        # ### flake8 settings
+        # #########################################################
+        self.requirements_test.append('flake8')
+        self.flake8_do_tests_in_local_testscript = True
+        self.flake8_do_tests_in_travis = True
+        self.flake8_do_tests_in_gha = True
+        # W503 and E203 are disabled for black, see : https://black.readthedocs.io/en/stable/the_black_code_style.html
+        # F401, unused imports
+        self.flake8_ignores: List[str] = ['E123', 'E203', 'E402', 'F401', 'F403', 'F405', 'W503']
+        self.flake8_max_line_length: int = 88
+        self.flake8_max_complexity: int = 10
+        self.flake8_exclude: List[str] = self.common_excludes
+
+        # #########################################################
+        # ### black settings
+        # #########################################################
+        self.black_auto_in_local_testscript: bool = True
+        self.black_show_badge: bool = self.black_auto_in_local_testscript
+        self.requirements_test.append('black ; platform_python_implementation != "PyPy"')
+        self.requirements_test.append('black==19.3b0 ; platform_python_implementation == "PyPy"')
+        self.black_line_length: int = 88
+        # put the lowest version in use here, so it will be compatible with later versions
+        self.black_target_versions: List[str] = ['py36']
+        self.black_include_regexp: str = r'\.pyi?$'
+        self.black_exclude_regexp: str = r'/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist)/'
+
+        # #########################################################
+        # ### mypy settings
+        # #########################################################
+
+        self.mypy_strict_options: List[str] = ['--strict', '--warn-unused-ignores', '--implicit-reexport', '--follow-imports=silent',
+                                               '--install-types', '--non-interactive']
+        self.mypy_strict_options_follow_imports: List[str] = ['--strict', '--no-warn-unused-ignores', '--implicit-reexport', '--follow-imports=normal',
+                                                              '--ignore-missing-imports', '--install-types', '--non-interactive']
+
+        self.mypy_do_tests_in_local_testscript = True
+        self.mypy_do_tests_in_travis = True
+        self.mypy_do_tests_in_gha = True
+        self.mypy_options_testscript: List[str] = self.mypy_strict_options_follow_imports
+        self.mypy_options_travis: List[str] = self.mypy_strict_options_follow_imports
+        self.mypy_options_gha: List[str] = self.mypy_strict_options_follow_imports
 
         # testscript_additional_mypy_paths:
         # additional project directories mypy needs to find
@@ -129,45 +192,139 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # only append or delete from this list in inherited configs
         self.testscript_additional_mypy_root_paths: List[pathlib.Path] = list()
 
-        # ### Travis Tests
+        # #########################################################
+        # ### coverage settings (coverage depends on pytest)
+        # #########################################################
+        # to upload code climate code coverage, You need to create the secret CC_TEST_REPORTER_ID
+        self.coverage_do_travis = True
+        self.coverage_do_gha = True
+        self.coverage_do_local_testscript = True
+
+        self.coverage_upload_codecov = True
+        self.coverage_upload_code_climate = True
+
+        self.do_code_coverage_code_climate = True
+        self.do_code_coverage_codecov = True
+
+        # #########################################################
+        # ### Travis (and Github actions) settings
+        # #########################################################
+        # ### Github Tests
+        self.add_github_actions = True
+
         # Travis Linux Version 'bionic', 'xenial', 'trusty', 'precise'
-        self.travis_python_version = 'bionic'
+        self.travis_linux_version = 'bionic'
         self.travis_linux_tests = True
         self.travis_osx_tests = True
         self.travis_windows_tests = True
         self.travis_wine_tests = False
 
+        self.gha_linux_tests = True
+        self.gha_osx_tests = True
+        self.gha_windows_tests = True
+        self.gha_wine_tests = False
+
+        # ### TRAVIS windows Test Matrix
+        self.travis_windows_matrix_deploy_sdist = False
+        self.travis_windows_matrix_deploy_wheel = False
+        self.travis_windows_matrix_build_test = False
+        self.travis_windows_matrix_only_on_tagged_builds = False
+        self.travis_windows_matrix_build_docs = False
+        self.travis_windows_matrix_mypy_test = True
+
+        # ### GHA windows Test Matrix
+        self.gha_windows_matrix_deploy_sdist = False
+        self.gha_windows_matrix_deploy_wheel = False
+        self.gha_windows_matrix_build_test = False
+        self.gha_windows_matrix_only_on_tagged_builds = False
+        self.gha_windows_matrix_build_docs = False
+        self.gha_windows_matrix_mypy_test = True
+        self.gha_windows_matrix_setup_install = True
+        self.gha_windows_matrix_setup_install_test = True
+        self.gha_windows_matrix_cli_test = self.create_cli_file
+
+        # ### TRAVIS osx Test Matrix
+        self.travis_osx_matrix_deploy_sdist = False
+        self.travis_osx_matrix_deploy_wheel = False
+        self.travis_osx_matrix_build_test = True
+        self.travis_osx_matrix_only_on_tagged_builds = False
+        self.travis_osx_matrix_build_docs = False
+        self.travis_osx_matrix_mypy_test = True
+
+        # ### GHA osx Test Matrix
+        self.gha_osx_matrix_deploy_sdist = True
+        self.gha_osx_matrix_deploy_wheel = True
+        self.gha_osx_matrix_build_test = True
+        self.gha_osx_matrix_only_on_tagged_builds = False
+        self.gha_osx_matrix_build_docs = False
+        self.gha_osx_matrix_mypy_test = True
+        self.gha_osx_matrix_setup_install = True
+        self.gha_osx_matrix_setup_install_test = True
+        self.gha_osx_matrix_cli_test = self.create_cli_file
+
         # ### TRAVIS Linux Test Matrix
-        self.travis_linux_python_versions = ['3.6', '3.7', '3.8', '3.8-dev', 'pypy3']
-        # only valid if self.do_pytest_mypy_tests = True
-        self.mypy_strict_typecheck_on_python_versions: List[str] = ['3.6', '3.7', '3.8', '3.8-dev']
-        self.build_docs_on_python_versions: List[str] = ['3.8']
-        # only valid if self.is_pypi_package = True
-        # You must only state ONE python version which is used to deploy in the matrix,
-        # otherwise You would deploy multiple times !
-        self.deploy_check_on_python_versions: List[str] = ['3.8']
-        self.deploy_to_pypi_on_python_versions: List[str] = ['3.8']
+        self.travis_linux_do_cli_test = self.create_cli_file
+        self.travis_linux_test_matrix: List[TravisLinuxTestMatrix] = list()
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', build_test=True, mypy_test=True,
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
+                                                                   deploy_sdist=True, deploy_wheel=False, only_on_tagged_builds=False, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9', build_test=True, mypy_test=True,
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True,
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9-dev', build_test=True, mypy_test=True,
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy3', build_test=True, mypy_test=False,
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
 
-        # travis secrets (encrypted environment variables) are stored in project_dir/travis_secrets/secrets/ and will be loaded
-        # by PizzaCutter automatically into the travis.yml.
-        # to create those secrets, run the shellscript project_dir/travis_secrets/create_secrets.sh
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='ppc64le', python_version='3.9', build_test=True, mypy_test=True,
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='s390x', python_version='3.9', build_test=True, mypy_test=True,
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
+        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='arm64', python_version='3.9', build_test=True, mypy_test=True,
+                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=True, build_docs=False,
+                                                                   do_setup_install=True, do_setup_install_test=False,
+                                                                   do_cli_test=self.travis_linux_do_cli_test))
 
-        # Following Secrets You will need :
-
-        # in order to use CodeClimate Coverage, You need the CC_TEST_REPORTER_ID
-        # get it under https://codeclimate.com/github/<user>/<project> and press "test coverage" - copy the key from there
-        # use the shellscript project_dir/travis_secrets/create_secrets.sh to create the secret :
-        # put variable name  : CC_TEST_REPORTER_ID
-        # put variable value : <the key You copied>
-
-        # in order to be able to deploy to pypi, we need the pypi_password:
-        # use the shellscript project_dir/travis_secrets/create_secrets.sh to create the secret :
-        # put variable name  : pypi_password
-        # put variable value : <your pypi password>
-
-        # please remember You can not copy secrets from one project to another -
-        # You need to encrypt that secrets for each project (its tied to the git repository) seperately,
-        # even if the secret has the same value (like Your PyPi password)
+        # ### Github Actions Linux Test Matrix
+        self.gha_services: str = ''
+        self.gha_linux_do_cli_test = True
+        self.gha_linux_test_matrix: List[TravisLinuxTestMatrix] = list()
+        self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', build_test=True, mypy_test=True,
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
+        self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
+        self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
+        self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9', build_test=True, mypy_test=True,
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
+        self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.10.0', build_test=True, mypy_test=True,
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True,
+                                                                do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
+        self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy-3.8', build_test=True, mypy_test=False,
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
 
         # ### .docs Settings
         # if to show badge for jupyter
@@ -176,21 +333,14 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.docs_badges_with_jupiter = False
         # I would suggest '100%', 'good', 'some', 'progressing'
         self.docs_code_coverage_bragging = '100%'
+        # valid choices for CI Badge : 'travis' or 'gha'
+        self.docs_show_which_ci_badge: str = 'gha'
 
         # ### requirements_test.txt Settings
-        # add here the requirements for which be installed temporarily for
-        # "setup.py install test" or "pip install <package> --install-option test"
-        self.requirements_test: List[str] = list()
+        # add here the requirements which will be needed for local or travis testing
         self.requirements_test.append('coloredlogs')
-        # self.requirements_test.append('mypy ; platform_python_implementation != "PyPy" and python_version >= "3.5"')
-        # mypy seems not to work on pypy3, so we dont install it
-        self.requirements_test.append('mypy ; platform_python_implementation != "PyPy"')
         self.requirements_test.append('pytest')
-        self.requirements_test.append('pytest-pycodestyle ; python_version >= "3.5"')
-        self.requirements_test.append('pytest-mypy ; platform_python_implementation != "PyPy" and python_version >= "3.5"')
         self.requirements_test.append('pytest-runner')
-        # You should test if Your module is pickable for multiprocessing on windows - use dill, see project gh/bitranox/lib_platform/tests
-        # self.requirements_test.append('dill')
 
         # ### setup.py Settings
         # include additional package data files here !!!
@@ -207,6 +357,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                   'Natural Language :: English',
                                   'Operating System :: OS Independent',
                                   'Programming Language :: Python',
+                                  'Programming Language :: Python :: 3.6',
+                                  'Programming Language :: Python :: 3.7',
+                                  'Programming Language :: Python :: 3.8',
+                                  'Programming Language :: Python :: pypy3',
                                   'Topic :: Software Development :: Libraries :: Python Modules']
 
         self.set_defaults()
@@ -239,6 +393,35 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # the path of the package dir
         self.path_package_dir = self.pizza_cutter_path_target_dir / self.project_dir / self.package_dir
         self.path_project_dir = self.pizza_cutter_path_target_dir / self.project_dir
+
+        if self.flake8_do_tests_in_local_testscript or self.flake8_do_tests_in_travis or self.flake8_do_tests_in_gha:
+            self.requirements_test.append('flake8')
+        else:
+            self.requirements_test.remove('flake8')
+
+        if self.mypy_options_testscript or self.mypy_do_tests_in_travis or self.mypy_do_tests_in_gha:
+            self.requirements_test.append('mypy ; platform_python_implementation != "PyPy"')
+        else:
+            self.requirements_test.remove('mypy ; platform_python_implementation != "PyPy"')
+
+        if self.coverage_do_travis or self.coverage_do_local_testscript or self.coverage_do_gha:
+            self.requirements_test.append('pytest-cov')
+            self.requirements_test.append('coverage')
+        else:
+            self.requirements_test.remove('pytest-cov')
+            self.requirements_test.remove('coverage')
+
+        if self.coverage_upload_codecov:
+            self.requirements_test.append('codecov')
+        else:
+            self.requirements_test.remove('codecov')
+
+        if self.pytest_do_local_testscript or self.pytest_do_local_testscript:
+            self.requirements_test.append('pytest')
+            self.requirements_test.append('pytest-runner')
+        else:
+            self.requirements_test.remove('pytest')
+            self.requirements_test.append('pytest-runner')
 
     # ##########################################################################################################################################################
     # replacement patterns
@@ -304,18 +487,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         """
 
-        self.url = 'https://github.com/{github_account}/{project_name}'.format(github_account=self.github_account, project_name=self.project_name)
-        self.github_master = 'git+https://github.com/{github_account}/{project_name}.git'.format(
-            github_account=self.github_account,
-            project_name=self.project_name)
+        self.url = f'https://github.com/{self.github_account}/{self.project_name}'
+        self.github_master = f'git+https://github.com/{self.github_account}/{self.project_name}.git'
         self.travis_repo_slug = self.github_account + '/' + self.project_name
-
         # we ned to have a function main_commandline in module module_name - see examples
-        self.setup_entry_points = {'console_scripts': ['{shell_command} = {package_dir}.{cli_module}:{cli_method}'.format(
-            shell_command=self.shell_command,
-            package_dir=self.package_dir,
-            cli_module=self.cli_module,
-            cli_method=self.cli_method)]}  # type: Dict[str, List[str]]
+        self.setup_entry_points = {'console_scripts': [f'{self.shell_command} = {self.package_dir}.{self.cli_module}:{self.cli_method}']}
 
         if self.is_typed_package:
             self.setup_included_files.append('py.typed')
@@ -384,9 +560,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             self.pizza_cutter_patterns['{{PizzaCutter.index_entry_jupyter}}'] = ''
 
         if self.is_pypi_package:
-            self.pizza_cutter_patterns['{{PizzaCutter.|pypi|}}'] = '|pypi|'
+            self.pizza_cutter_patterns['{{PizzaCutter.|pypi|}}'] = '|pypi| '
+            self.pizza_cutter_patterns['{{PizzaCutter.|pypi-downloads|}}'] = '|pypi-downloads| '
         else:
             self.pizza_cutter_patterns['{{PizzaCutter.|pypi|}}'] = ''
+            self.pizza_cutter_patterns['{{PizzaCutter.|pypi-downloads|}}'] = ''
 
         self.setup_docs_test_info()
         self.setup_docs_installation_pypi()
@@ -395,42 +573,106 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.setup_travis()
         self.setup_travis_secrets()
         self.setup_travis_linux_tests()
+        self.setup_gha_linux_tests()
+        self.setup_travis_windows_tests()
+        self.setup_travis_osx_tests()
         self.setup_requirements_test()
         self.setup_setup_py()
-        self.setup_setup_cfg_pycodestyle()
-        self.setup_conftest_py()
+        self.setup_coverage()
+        self.setup_flake8()
+        self.setup_mypy()
+        self.setup_black()
+        self.setup_pytest()
 
     # ############################################################################
-    # conftest.py settings
+    # pytest settings
     # ############################################################################
-    def setup_conftest_py(self):
-        # pytest (conftest.py) test settings
-        if self.do_pytest_mypy_tests:
-            self.pytest_mypy_args.append('--mypy')
-        else:
-            remove_from_list(self.pytest_mypy_args, '--mypy')
-
-        self.pizza_cutter_patterns['{{PizzaCutter.pytest_mypy_args}}'] = str(list(set(self.pytest_mypy_args)))
-
-        if self.do_pytest_pep8_tests:
-            self.pytest_pycodestyle_args.append('--pycodestyle')
-        else:
-            remove_from_list(self.pytest_pycodestyle_args, '--pycodestyle')
-
-        self.pizza_cutter_patterns['{{PizzaCutter.pytest_pycodestyle_args}}'] = str(list(set(self.pytest_pycodestyle_args)))
+    def setup_pytest(self):
+        additional_args = sorted(list(set(self.pytest_additional_args)))
+        collect_ignores = sorted(list(set(self.pytest_collect_ignores)))
+        self.pizza_cutter_patterns['{{PizzaCutter.pytest.additional_args}}'] = str(additional_args)
+        self.pizza_cutter_patterns['{{PizzaCutter.pytest.collect_ignore}}'] = str(collect_ignores)
+        self.pizza_cutter_patterns['{{PizzaCutter.pytest_do_in_local_testscript}}'] = str(self.pytest_do_local_testscript)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.pytest_do_tests}}'] = str(self.pytest_do_travis)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.pytest_do_tests}}'] = str(self.pytest_do_gha)
 
     # ############################################################################
     # requirements_test.txt settings
     # ############################################################################
     def setup_requirements_test(self):
+        self.requirements_test = sorted(list(set(self.requirements_test)))
         self.pizza_cutter_patterns['# {{PizzaCutter.requirements_test}}'] = '\n'.join(self.requirements_test)
 
     # ############################################################################
-    # setup.cfg pycodestyle settings
+    # flake8 settings
     # ############################################################################
-    def setup_setup_cfg_pycodestyle(self):
-        self.pizza_cutter_patterns['{{PizzaCutter.pytest_pycodestyle_ignores}}'] = ', '.join(self.pytest_pycodestyle_ignores)
-        self.pizza_cutter_patterns['{{PizzaCutter.pytest_pycodestyle_max_line_length}}'] = str(self.pytest_pycodestyle_max_line_length)
+    def setup_flake8(self):
+        self.pizza_cutter_patterns['{{PizzaCutter.flake8_do_tests_in_local_testscript}}'] = str(self.flake8_do_tests_in_local_testscript)
+        self.pizza_cutter_patterns['{{PizzaCutter.flake8_do_tests_in_travis}}'] = str(self.flake8_do_tests_in_travis)
+        self.pizza_cutter_patterns['{{PizzaCutter.flake8_do_tests_in_gha}}'] = str(self.flake8_do_tests_in_gha)
+        self.pizza_cutter_patterns['{{PizzaCutter.flake8_ignores}}'] = ', '.join(self.flake8_ignores)
+        self.pizza_cutter_patterns['{{PizzaCutter.flake8_max_line_length}}'] = str(self.flake8_max_line_length)
+        self.pizza_cutter_patterns['{{PizzaCutter.flake8_max_complexity}}'] = str(self.flake8_max_complexity)
+        self.pizza_cutter_patterns['{{PizzaCutter.flake8_exclude}}'] = ', '.join(self.flake8_exclude)
+
+    # ############################################################################
+    # flake8 settings
+    # ############################################################################
+    def setup_coverage(self):
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.do_coverage}}'] = str(self.coverage_do_travis)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.do_coverage}}'] = str(self.coverage_do_gha)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.do_coverage_upload_codecov}}'] = str(self.coverage_upload_codecov)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.do_coverage_upload_codecov}}'] = str(self.coverage_upload_codecov)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.do_coverage_upload_code_climate}}'] = str(self.coverage_upload_code_climate)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.do_coverage_upload_code_climate}}'] = str(self.coverage_upload_code_climate)
+        self.pizza_cutter_patterns['{{PizzaCutter.testscript.do_coverage}}'] = str(self.coverage_do_local_testscript)
+
+        if self.coverage_do_local_testscript:
+            # coverage_option = '--cov={package_name} --cov-config=.coveragerc'.format(package_name=self.package_name)
+            # since not all modules were discovered, we use the directory - this seems to work
+            # --cov-config=.coveragerc
+            coverage_option = '--cov="${project_root_dir}" --cov-config=.coveragerc'
+        else:
+            coverage_option = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.testscript.pytest_coverage_option}}'] = coverage_option
+
+        self.coverage_do_local_testscript = True
+
+        self.coverage_upload_codecov = True
+        self.coverage_upload_code_climate = True
+
+        self.do_code_coverage_code_climate = True
+        self.do_code_coverage_codecov = True
+
+    # ############################################################################
+    # mypy settings
+    # ############################################################################
+    def setup_mypy(self):
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.mypy_do_tests}}'] = str(self.mypy_do_tests_in_travis)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.mypy_do_tests}}'] = str(self.mypy_do_tests_in_gha)
+        self.pizza_cutter_patterns['{{PizzaCutter.testscript.do_mypy_tests}}'] = str(self.mypy_do_tests_in_local_testscript)
+
+        travis_mypy_options = sorted(list(set(self.mypy_options_travis)))
+        gha_mypy_options = sorted(list(set(self.mypy_options_gha)))
+        testscript_mypy_options = sorted(list(set(self.mypy_options_testscript)))
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.mypy_options}}'] = ' '.join(travis_mypy_options)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.mypy_options}}'] = ' '.join(gha_mypy_options)
+        self.pizza_cutter_patterns['{{PizzaCutter.testscript.mypy_options}}'] = ' '.join(testscript_mypy_options)
+
+    # ############################################################################
+    # black settings
+    # ############################################################################
+    def setup_black(self):
+        self.pizza_cutter_patterns['{{PizzaCutter.black_line_length}}'] = str(self.black_line_length)
+        self.pizza_cutter_patterns['{{PizzaCutter.black_target_versions}}'] = str(self.black_target_versions)
+        self.pizza_cutter_patterns['{{PizzaCutter.black_include_regexp}}'] = self.black_include_regexp
+        self.pizza_cutter_patterns['{{PizzaCutter.black_exclude_regexp}}'] = self.black_exclude_regexp
+        self.pizza_cutter_patterns['{{PizzaCutter.auto_black_files}}'] = str(self.black_auto_in_local_testscript)
+
+        if self.black_show_badge:
+            self.pizza_cutter_patterns['{{PizzaCutter.|black|}}'] = '|black|'
+        else:
+            self.pizza_cutter_patterns['{{PizzaCutter.|black|}}'] = ''
 
     # ############################################################################
     # setup.py settings
@@ -439,38 +681,63 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.setup_python_requires}}'] = '">={}"'.format(self.setup_minimal_python_version_required)
         self.pizza_cutter_patterns['{{PizzaCutter.setup_package_data}}'] = str(self.setup_package_data)
         self.pizza_cutter_patterns['{{PizzaCutter.setup_classifiers}}'] = str(self.setup_classifiers)
-        self.pizza_cutter_patterns['{{PizzaCutter.setup_entry_points}}'] = str(self.setup_entry_points)
+        if self.create_cli_file:
+            self.pizza_cutter_patterns['{{PizzaCutter.setup_entry_points}}'] = str(self.setup_entry_points)
+        else:
+            self.pizza_cutter_patterns['{{PizzaCutter.setup_entry_points}}'] = str(dict())
         self.pizza_cutter_patterns['{{PizzaCutter.setup_zip_safe}}'] = str(self.setup_zip_safe)
 
     # ############################################################################
     # .travis.yml settings
     # ############################################################################
     def setup_travis(self):
-        self.pizza_cutter_patterns['{{PizzaCutter.travis.linux_version}}'] = self.travis_python_version
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.linux_version}}'] = self.travis_linux_version
         self.pizza_cutter_patterns['{{PizzaCutter.travis_windows_addon}}'] = ''
         self.pizza_cutter_patterns['{{PizzaCutter.travis_linux_addon}}'] = ''
         self.pizza_cutter_patterns['{{PizzaCutter.travis_pypy_addon}}'] = ''
         self.pizza_cutter_patterns['{{PizzaCutter.travis_osx_addon}}'] = ''
         self.pizza_cutter_patterns['{{PizzaCutter.travis_wine_addon}}'] = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.gha_windows_addon}}'] = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.gha_linux_addon}}'] = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.gha_pypy_addon}}'] = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.gha_osx_addon}}'] = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.gha_wine_addon}}'] = ''
 
         if self.travis_windows_tests:
             self.pizza_cutter_patterns['{{PizzaCutter.travis_windows_addon}}'] = \
                 (self.pizza_cutter_path_template_dir /
                  '{{PizzaCutter.project_dir}}/travis_addons{{PizzaCutter.option.no_copy}}/travis_template_windows_addon.yml').read_text()
 
+        if self.gha_windows_tests:
+            self.pizza_cutter_patterns['{{PizzaCutter.gha_windows_addon}}'] = \
+                (self.pizza_cutter_path_template_dir /
+                 '{{PizzaCutter.project_dir}}/gha_addons{{PizzaCutter.option.no_copy}}/gha_template_windows_addon.yml').read_text()
+
         if self.travis_osx_tests:
             self.pizza_cutter_patterns['{{PizzaCutter.travis_osx_addon}}'] = \
                 (self.pizza_cutter_path_template_dir /
                  '{{PizzaCutter.project_dir}}/travis_addons{{PizzaCutter.option.no_copy}}/travis_template_osx_addon.yml').read_text()
+
+        if self.gha_osx_tests:
+            self.pizza_cutter_patterns['{{PizzaCutter.gha_osx_addon}}'] = \
+                (self.pizza_cutter_path_template_dir /
+                 '{{PizzaCutter.project_dir}}/gha_addons{{PizzaCutter.option.no_copy}}/gha_template_osx_addon.yml').read_text()
 
         if self.travis_wine_tests:
             self.pizza_cutter_patterns['{{PizzaCutter.travis_wine_addon}}'] = \
                 (self.pizza_cutter_path_template_dir /
                  '{{PizzaCutter.project_dir}}/travis_addons{{PizzaCutter.option.no_copy}}/travis_template_wine_addon.yml').read_text()
 
+        if self.gha_wine_tests:
+            self.pizza_cutter_patterns['{{PizzaCutter.gha_wine_addon}}'] = \
+                (self.pizza_cutter_path_template_dir /
+                 '{{PizzaCutter.project_dir}}/gha_addons{{PizzaCutter.option.no_copy}}/gha_template_wine_addon.yml').read_text()
+
         # travis rst_include (rebuild Readme File)
-        self.pizza_cutter_patterns['{{PizzaCutter.travis.rst_include_source}}'] = './{}/README_template.rst'.format(self.docs_dir)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.rst_include_source}}'] = f'./{self.docs_dir}/README_template.rst'
         self.pizza_cutter_patterns['{{PizzaCutter.travis.rst_include_target}}'] = './README.rst'
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.rst_include_source}}'] = f'./{self.docs_dir}/README_template.rst'
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.rst_include_target}}'] = './README.rst'
 
     # ############################################################################
     # .travis.yml settings
@@ -493,8 +760,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             l_secrets.append(str_secret)
             self.pizza_cutter_patterns['{{PizzaCutter.travis.secrets}}'] = '\n'.join(l_secrets)
             if not self.project_name.startswith('pct_python_default_'):
-                logger.info('Project {project}: set encrypted environment variable "{env_var_name}"'.format(
-                    project=self.project_name, env_var_name=env_var_name))
+                logger.info(f'Project {self.project_name}: set encrypted environment variable "{env_var_name}"')
 
     # ############################################################################
     # .travis Linux Matrix settings
@@ -503,74 +769,179 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         if not self.travis_linux_tests:
             self.pizza_cutter_patterns['{{PizzaCutter.travis.linux.tests}}'] = ''
         else:
-            travis_matrix_linux = \
-                """
-    - os: linux
-      language: python
-      python: "{version}"
-      before_install:
-          - export MYPY_STRICT="{mypy_strict_typecheck}"
-          - export BUILD_DOCS="{build_docs}"
-          - export DEPLOY_CHECK="{deploy_check}"
-          - export DEPLOY="{deploy_on_pypi}"
+            l_travis_linux_tests: List[str] = list()
+            for matrix_item in self.travis_linux_test_matrix:
+                arch = matrix_item.arch
 
+                if matrix_item.only_on_tagged_builds:
+                    condition = 'tag IS present'
+                else:
+                    condition = 'true'
+                build_docs = matrix_item.build_docs
+                deploy_sdist = matrix_item.deploy_sdist
+                deploy_wheel = matrix_item.deploy_wheel
+                build_test = matrix_item.build_test
+                python_version = matrix_item.python_version
+                mypy_test = matrix_item.mypy_test and self.mypy_do_tests_in_travis
+                travis_linux_matrix_item = \
+                    f"""
+    - os: linux
+      arch: "{arch}"
+      if: {condition}
+      language: python
+      python: "{python_version}"
+      before_install:
+          - export BUILD_DOCS="{build_docs}"
+          - export DEPLOY_SDIST="{deploy_sdist}"
+          - export DEPLOY_WHEEL="{deploy_wheel}"
+          - export BUILD_TEST="{build_test}"
+          - export MYPY_DO_TESTS="{mypy_test}"
 """
 
-            if len(self.deploy_to_pypi_on_python_versions) > 1:
-                raise ValueError('You must only deploy on PyPi on ONE Python Version, otherwise You would deploy multiple times')
+                l_travis_linux_tests.append(travis_linux_matrix_item)
+            self.pizza_cutter_patterns['{{PizzaCutter.travis.linux.tests}}'] = ''.join(l_travis_linux_tests)
 
-            l_travis_linux_versions: List[str] = list()
-            for version in self.travis_linux_python_versions:
-                mypy_strict_typecheck = (version in self.mypy_strict_typecheck_on_python_versions) and self.do_pytest_mypy_tests
-                build_docs = version in self.build_docs_on_python_versions
-                deploy_check = (version in self.deploy_check_on_python_versions) and self.is_pypi_package
-                deploy_on_pypi = (version in self.deploy_to_pypi_on_python_versions) and self.is_pypi_package
-                l_travis_linux_versions.append(travis_matrix_linux.format(
-                    version=version, mypy_strict_typecheck=mypy_strict_typecheck,
-                    build_docs=build_docs, deploy_check=deploy_check, deploy_on_pypi=deploy_on_pypi))
-            self.pizza_cutter_patterns['{{PizzaCutter.travis.linux.tests}}'] = ''.join(l_travis_linux_versions)
+    # ############################################################################
+    # github_actions Linux Matrix settings
+    # ############################################################################
+    def setup_gha_linux_tests(self) -> None:
+        if not self.gha_linux_tests:
+            self.pizza_cutter_patterns['{{PizzaCutter.gha.linux.tests}}'] = ''
+        else:
+            l_gha_linux_tests: List[str] = list()
+            for matrix_item in self.gha_linux_test_matrix:
+                arch = matrix_item.arch
+
+                if matrix_item.only_on_tagged_builds:
+                    condition = 'tag IS present'
+                else:
+                    condition = 'true'
+                build_docs = matrix_item.build_docs
+                deploy_sdist = matrix_item.deploy_sdist
+                deploy_wheel = matrix_item.deploy_wheel
+                build_test = matrix_item.build_test
+                python_version = matrix_item.python_version
+                mypy_test = matrix_item.mypy_test and self.mypy_do_tests_in_gha
+                do_setup_install = matrix_item.do_setup_install
+                do_setup_install_test = matrix_item.do_setup_install_test
+                do_cli_test = matrix_item.do_cli_test
+
+                gha_linux_matrix_item = \
+                    f"""
+          - os: ubuntu-latest
+            python-version: "{python_version}"
+            env:
+              BUILD_DOCS: "{build_docs}"
+              DEPLOY_SDIST: "{deploy_sdist}"
+              DEPLOY_WHEEL: "{deploy_wheel}"
+              DEPLOY_TEST: "{build_test}"
+              MYPY_DO_TESTS: "{mypy_test}"
+              DO_SETUP_INSTALL: "{do_setup_install}"
+              DO_SETUP_INSTALL_TEST: "{do_setup_install_test}"
+              DO_CLI_TEST: "{do_cli_test}"
+"""
+
+                l_gha_linux_tests.append(gha_linux_matrix_item)
+
+            self.pizza_cutter_patterns['{{PizzaCutter.gha.linux.tests}}'] = ''.join(l_gha_linux_tests)
+            self.pizza_cutter_patterns['{{PizzaCutter.gha.services}}'] = self.gha_services
+
+    # ############################################################################
+    # .travis Windows Matrix settings
+    # ############################################################################
+    def setup_travis_windows_tests(self) -> None:
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.deploy_sdist}}'] = str(self.travis_windows_matrix_deploy_sdist)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.deploy_wheel}}'] = str(self.travis_windows_matrix_deploy_wheel)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.build_test}}'] = str(self.travis_windows_matrix_build_test)
+        if self.travis_windows_matrix_only_on_tagged_builds:
+            condition = 'tag IS present'
+        else:
+            condition = 'true'
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.condition}}'] = condition
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.build_docs}}'] = str(self.travis_windows_matrix_build_docs)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.windows.mypy_test}}'] = str(self.travis_windows_matrix_mypy_test and self.mypy_do_tests_in_travis)
+
+        # GHA
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.deploy_sdist}}'] = str(self.gha_windows_matrix_deploy_sdist)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.deploy_wheel}}'] = str(self.gha_windows_matrix_deploy_wheel)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.build_test}}'] = str(self.gha_windows_matrix_build_test)
+        if self.gha_windows_matrix_only_on_tagged_builds:
+            condition = 'tag IS present'
+        else:
+            condition = 'true'
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.condition}}'] = condition
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.build_docs}}'] = str(self.gha_windows_matrix_build_docs)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.mypy_test}}'] = str(self.gha_windows_matrix_mypy_test and self.mypy_do_tests_in_gha)
+
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.setup.py.install}}'] = str(self.gha_windows_matrix_setup_install)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.setup.py.test}}'] = str(self.gha_windows_matrix_setup_install_test)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.cli.test}}'] = str(self.gha_windows_matrix_cli_test)
+
+    # ############################################################################
+    # .travis Windows Matrix settings
+    # ############################################################################
+    def setup_travis_osx_tests(self) -> None:
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.deploy_sdist}}'] = str(self.travis_osx_matrix_deploy_sdist)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.deploy_wheel}}'] = str(self.travis_osx_matrix_deploy_wheel)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.build_test}}'] = str(self.travis_osx_matrix_build_test)
+        if self.travis_osx_matrix_only_on_tagged_builds:
+            condition = 'tag IS present'
+        else:
+            condition = 'true'
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.condition}}'] = condition
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.build_docs}}'] = str(self.travis_osx_matrix_build_docs)
+        self.pizza_cutter_patterns['{{PizzaCutter.travis.osx.mypy_test}}'] = str(self.travis_osx_matrix_mypy_test and self.mypy_do_tests_in_travis)
+
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.deploy_sdist}}'] = str(self.gha_osx_matrix_deploy_sdist)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.deploy_wheel}}'] = str(self.gha_osx_matrix_deploy_wheel)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.build_test}}'] = str(self.gha_osx_matrix_build_test)
+        if self.gha_osx_matrix_only_on_tagged_builds:
+            condition = 'tag IS present'
+        else:
+            condition = 'true'
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.condition}}'] = condition
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.build_docs}}'] = str(self.gha_osx_matrix_build_docs)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.mypy_test}}'] = str(self.gha_osx_matrix_mypy_test and self.mypy_do_tests_in_gha)
+
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.setup.py.install}}'] = str(self.gha_osx_matrix_setup_install)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.setup.py.test}}'] = str(self.gha_osx_matrix_setup_install_test)
+
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.cli.test}}'] = str(self.gha_osx_matrix_cli_test)
 
     # ############################################################################
     # test_dir/local_testscripts settings
     # ############################################################################
     def setup_testscripts(self):
-        # set if mypy tests should run in testscript
-        self.pizza_cutter_patterns['{{PizzaCutter.testscript.do_mypy_tests}}'] = str(self.do_pytest_mypy_tests)
 
-        # set additional PYTHONPATH's
+        # set additional PYTHONPATH
         add_python_path_bash_command = 'export PYTHONPATH="$(python3 ./testing_tools.py append_directory_to_python_path "{python_path}")"'
         l_python_paths: List[str] = list()
         for python_path in self.testscript_additional_pythonpaths:
             if not pathlib.Path(python_path).is_dir():
-                logger.warning('PYTHONPATH "{python_path}" does not exist, skipping'.format(python_path=python_path))
+                logger.warning(f'PYTHONPATH "{python_path}" does not exist, skipping')
             l_python_paths.append(add_python_path_bash_command.format(python_path=python_path))
         python_paths = '\n'.join(l_python_paths)
         self.pizza_cutter_patterns['# {{PizzaCutter.testscript.append_additional_python_paths}}'] = python_paths
 
-        # set additional MYPYPATH's
+        # set additional MYPYPATH
         add_mypy_path_bash_command = 'export MYPYPATH="$(python3 ./testing_tools.py append_directory_to_python_path "{mypy_path}")"'
         l_mypy_paths: List[str] = list()
         for mypy_path in self.testscript_additional_mypy_paths:
             if not mypy_path.is_dir():
-                logger.warning('MYPYPATH "{mypy_path}" does not exist, skipping'.format(mypy_path=mypy_path))
+                logger.warning(f'MYPYPATH "{mypy_path}" does not exist, skipping')
             l_mypy_paths.append(add_mypy_path_bash_command.format(mypy_path=mypy_path))
         mypy_paths = '\n'.join(l_mypy_paths)
         self.pizza_cutter_patterns['# {{PizzaCutter.testscript.append_additional_mypy_paths}}'] = mypy_paths
 
-        # set additional MYPYPATH's from a root directory - add all immediate subdirs as mypy path in the testscript
+        # set additional MYPYPATH from a root directory - add all immediate subdirs as mypy path in the testscript
         add_mypy_root_path_bash_command = 'export MYPYPATH="$(python3 ./testing_tools.py append_immediate_subdirs_to_mypy_path "{mypy_root_path}")"'
         l_mypy_root_paths: List[str] = list()
         for mypy_root_path in self.testscript_additional_mypy_root_paths:
             if not mypy_root_path.is_dir():
-                logger.warning('we can not add the immediate subdirs to MYPYPATH, because "{mypy_root_path}" does not exist, skipping'.format(
-                    mypy_root_path=mypy_root_path))
+                logger.warning(f'we can not add the immediate subdirs to MYPYPATH, because "{mypy_root_path}" does not exist, skipping')
             l_mypy_root_paths.append(add_mypy_root_path_bash_command.format(mypy_root_path=mypy_root_path))
         mypy_root_paths = '\n'.join(l_mypy_root_paths)
         self.pizza_cutter_patterns['# {{PizzaCutter.testscript.append_additional_mypy_paths_from_root_dir}}'] = mypy_root_paths
-
-        # set mypy options for testloop
-        self.pizza_cutter_patterns['{{PizzaCutter.testscript.mypy_strict_options}}'] = ' '.join(self.testscript_mypy_strict_options)
-        self.pizza_cutter_patterns['{{PizzaCutter.testscript.mypy_strict_with_imports_options}}'] = ' '.join(self.testscript_mypy_strict_with_import_options)
 
     # ############################################################################
     # docs - {{PizzaCutter.docs.python_test_info}} for .docs/tested_under.rst
@@ -578,18 +949,58 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
     def setup_docs_python_test_info(self) -> None:
         # supports python 3.6-3.8, pypy3 and possibly other dialects.
         # tested for python 3.6, 3.7, 3.8, 3.8-dev, pypy3
-        str_python_test_info = 'tested on linux "{travis_python_version}" with python {versions}'
-        versions = ', '.join(self.travis_linux_python_versions)
-        self.pizza_cutter_patterns['{{PizzaCutter.docs.python_test_info}}'] = str_python_test_info.format(versions=versions,
-                                                                                                          travis_python_version=self.travis_python_version)
+        def get_travis_linux_versions():
+            linux_versions: List[str] = list()
+            for travis_linux_test in self.travis_linux_test_matrix:
+                if travis_linux_test.python_version not in linux_versions:
+                    linux_versions.append(travis_linux_test.python_version)
+            return linux_versions
+
+        def get_travis_archs():
+            archs: List[str] = list()
+            for travis_linux_test in self.travis_linux_test_matrix:
+                if travis_linux_test.arch not in archs:
+                    archs.append(travis_linux_test.arch)
+            return archs
+
+        def get_gha_linux_versions():
+            linux_versions: List[str] = list()
+            for gha_linux_test in self.gha_linux_test_matrix:
+                if gha_linux_test.python_version not in linux_versions:
+                    linux_versions.append(gha_linux_test.python_version)
+            return linux_versions
+
+        def get_gha_archs():
+            archs: List[str] = list()
+            for gha_linux_test in self.gha_linux_test_matrix:
+                if gha_linux_test.arch not in archs:
+                    archs.append(gha_linux_test.arch)
+            return archs
+
+        str_python_test_info = ''
+        if self.docs_show_which_ci_badge.lower() == 'travis':
+            str_python_test_info = 'tested on linux "{travis_python_version}" with python {versions} - architectures: {architectures}'.format(
+                travis_python_version=self.travis_linux_version,
+                versions=', '.join(get_travis_linux_versions()),
+                architectures=', '.join(get_travis_archs()),
+                )
+        elif self.docs_show_which_ci_badge.lower() == 'gha':
+            str_python_test_info = 'tested on recent linux with python {versions} - architectures: {architectures}'.format(
+                versions=', '.join(get_gha_linux_versions()),
+                architectures=', '.join(get_gha_archs()),
+                )
+        else:
+            lib_log_utils.log_warning(f'unsupported parameter self.docs_show_which_ci_badge: {self.docs_show_which_ci_badge}')
+
+        self.pizza_cutter_patterns['{{PizzaCutter.docs.python_test_info}}'] = str_python_test_info
         self.pizza_cutter_patterns['{{PizzaCutter.docs.python_required}}'] = self.setup_minimal_python_version_required
 
     # ############################################################################
-    # docs - {{PizzaCutter.docs.test_info}} for .docs/tested_under.rst
+    # docs - {{PizzaCutter.docs.pypi_requirements}}, {{PizzaCutter.docs.include_installation_via_pypi}}
     # ############################################################################
     def setup_docs_installation_pypi(self):
         if self.is_pypi_package:
-            doc_string = '# for the latest Release on pypi:\n    {project_name}\n'.format(project_name=self.project_name)
+            doc_string = f'# for the latest Release on pypi:\n    {self.project_name}\n'
             self.pizza_cutter_patterns['{{PizzaCutter.docs.pypi_requirements}}'] = doc_string
             self.pizza_cutter_patterns['{{PizzaCutter.docs.include_installation_via_pypi}}'] = '.. include:: ./installation_via_pypi.rst'
         else:
@@ -608,12 +1019,12 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         """
 
-        if self.do_code_coverage_codecov:
+        if self.coverage_upload_codecov:
             link_coverage = 'https://codecov.io/gh/{travis_repo_slug}'.format(travis_repo_slug=self.travis_repo_slug)
         else:
             link_coverage = 'https://codeclimate.com/github/{travis_repo_slug}/test_coverage'.format(travis_repo_slug=self.travis_repo_slug)
 
-        if self.do_code_coverage_codecov or self.do_code_coverage_code_climate:
+        if self.coverage_do_travis or self.coverage_do_local_testscript or self.coverage_do_gha:
             msg_code_coverage = '`{docs_code_coverage_bragging} code coverage <{link_coverage}>`_, '.format(
                 docs_code_coverage_bragging=self.docs_code_coverage_bragging,
                 link_coverage=link_coverage
@@ -621,12 +1032,12 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         else:
             msg_code_coverage = ''
 
-        if self.do_pytest_pep8_tests:
-            msg_style_checking = 'codestyle checking ,'
+        if self.flake8_do_tests_in_travis or self.flake8_do_tests_in_gha:
+            msg_style_checking = 'flake8 style checking ,'
         else:
             msg_style_checking = ''
 
-        if self.do_pytest_mypy_tests:
+        if self.mypy_do_tests_in_travis or self.mypy_do_tests_in_gha:
             msg_mypy_tests = 'mypy static type checking ,'
         else:
             msg_mypy_tests = ''
@@ -639,13 +1050,31 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         if self.travis_osx_tests:
             l_tested_under.append('macOS')
 
-        if self.travis_windows_tests:
+        if self.travis_windows_tests or self.gha_windows_tests:
             l_tested_under.append('Windows')
 
-        if self.travis_wine_tests:
+        if self.travis_wine_tests or self.gha_wine_tests:
             l_tested_under.append('Wine')
 
-        test_link = ' <https://travis-ci.org/{travis_repo_slug}>`_, automatic daily builds and monitoring'.format(travis_repo_slug=self.travis_repo_slug)
+        test_link = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge}}'] = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge_link}}'] = ''
+        if self.docs_show_which_ci_badge == 'travis':
+            test_link = f' <https://travis-ci.org/{self.travis_repo_slug}>`_, automatic daily builds and monitoring'
+            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge}}'] = '|build_badge| '
+            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge_link}}'] = """
+.. |build_badge| image:: https://img.shields.io/travis/{{PizzaCutter.repository_slug}}/master.svg
+   :target: https://travis-ci.com/{{PizzaCutter.repository_slug}}
+"""
+
+        elif self.docs_show_which_ci_badge == 'gha':
+            test_link = f' <https://github.com/{self.travis_repo_slug}/actions/workflows/python-package.yml>`_, automatic daily builds and monitoring'
+            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge}}'] = '|build_badge| '
+            self.pizza_cutter_patterns['{{PizzaCutter.docs.build_badge_link}}'] = """
+.. |build_badge| image:: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/python-package.yml/badge.svg
+   :target: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/python-package.yml
+"""
+
         if l_tested_under:
             tested_under = ''.join(['tested under `', ', '.join(l_tested_under), test_link])
         else:
@@ -673,21 +1102,45 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         else:
             (self.path_package_dir / 'py.typed').unlink(missing_ok=True)
 
+
+        # create documentation
         import rst_include
 
         path_cli_module = self.path_package_dir / (self.cli_module + '.py')
         path_cli_help_rst_file = self.path_project_dir / self.docs_dir / 'commandline_help.rst'
-        self.create_commandline_help_file(path_cli_module=path_cli_module,
-                                          path_cli_help_rst_file=path_cli_help_rst_file,
-                                          registered_shell_command=self.shell_command)
+        if self.create_cli_file:
+            self.create_commandline_help_file(path_cli_module=path_cli_module,
+                                              path_cli_help_rst_file=path_cli_help_rst_file,
+                                              registered_shell_command=self.shell_command)
+        else:
+            path_cli_module.unlink(missing_ok=True)
+            (self.path_project_dir / 'tests/test_cli.py').unlink(missing_ok=True)
+            path_cli_help_rst_file.write_text('there are no cli commands', encoding='utf-8')
 
         path_rst_source_file = self.path_project_dir / self.docs_dir / 'README_template.rst'
         path_rst_target_file = self.path_project_dir / 'README.rst'
-        rst_include.rst_inc(source=path_rst_source_file, target=path_rst_target_file)
-        # replace "{{\PizzaCutter" with "{{PizzaCutter" - we use it in docs, so it will not be replaced by accident
+        rst_include.lib_main.rst_inc(source=path_rst_source_file, target=path_rst_target_file)
+        # replace "{{\\PizzaCutter" with "{{PizzaCutter" - we use it in docs, so it will not be replaced by accident
         text = path_rst_target_file.read_text()
-        text = text.replace('{{\PizzaCutter', '{{PizzaCutter')
+        text = text.replace('{{\\PizzaCutter', '{{PizzaCutter')
         path_rst_target_file.write_text(text)
+
+        # black files if needed
+        # we guess that if setup.py exists, we are in the final package
+        path_setup_py = self.path_project_dir / 'setup.py'
+
+        if path_setup_py.is_file() and self.black_auto_in_local_testscript:
+            path_black = self.path_project_dir / '**/*.py'
+            command = f'black {path_black}'
+            subprocess.run(command, shell=True)
+
+        if path_setup_py.is_file():
+            logger.warning(f'reformatting "{path_setup_py}"')
+            command = f'black {path_setup_py}'
+            subprocess.run(command, shell=True)
+
+        if self.add_github_actions is False:
+            (self.path_project_dir / '.github/workflows/python-package.yml').unlink(missing_ok=True)
 
     # TODO: make external module in order to parse click help for sub commands / groups
     def create_commandline_help_file(self, path_cli_module: pathlib.Path, path_cli_help_rst_file: pathlib.Path, registered_shell_command: str) -> None:
@@ -771,12 +1224,12 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         if path_source_file.is_file():
             with open(str(path_source_file), 'r', encoding='utf-8-sig') as f_sourcefile:
                 with open(str(path_temp_file), 'w', encoding='utf-8') as f_temp_file:
-                    f_temp_file.write('.. code-block:: bash\n\n')
+                    f_temp_file.write('.. code-block::\n\n')
                     for cnt, source_line in enumerate(f_sourcefile):
                         f_temp_file.write(('   ' + source_line).rstrip() + '\n')
         else:
             with open(str(path_temp_file), 'w') as f_temp_file:
-                f_temp_file.write('.. code-block:: bash\n\n    there are no commandline options\n')
+                f_temp_file.write('.. code-block::\n\n    there are no commandline options\n')
 
         if path_target_file == path_source_file:
             if path_source_file.exists():

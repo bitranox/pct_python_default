@@ -1,0 +1,7 @@
+
+[tool.black]
+line-length = {{PizzaCutter.black_line_length}}
+target-version = {{PizzaCutter.black_target_versions}}
+# Note that you have to use single-quoted strings in TOML for regular expressions
+include = '{{PizzaCutter.black_include_regexp}}'
+exclude = '{{PizzaCutter.black_exclude_regexp}}'

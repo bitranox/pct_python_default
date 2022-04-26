@@ -1,3 +1,3 @@
-.. code-block:: bash
+.. code-block::
 
     there are no commandline options

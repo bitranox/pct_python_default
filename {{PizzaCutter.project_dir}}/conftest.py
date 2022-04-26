@@ -1,28 +1,10 @@
-import platform
+import pytest
 from typing import List
 
-collect_ignore = ['setup.py']
+collect_ignore: List[str] = {{PizzaCutter.pytest.collect_ignore}}
 
 
-def pytest_cmdline_preparse(args: List[str]) -> None:
-    """
-    # run tests on multiple processes if pytest-xdist plugin is available
-    # unfortunately it does not work with codecov
-    import sys
-    if "xdist" in sys.modules:  # pytest-xdist plugin
-        import multiprocessing
-
-        num = int(max(multiprocessing.cpu_count() / 2, 1))
-        args[:] = ["-n", str(num)] + args
-    """
-
-    additional_mypy_args: List[str] = list()
-    additional_pycodestyle_args: List[str] = list()
-
-    # add mypy option if not pypy
-    # if platform.python_implementation() != "PyPy" and sys.version_info >= (3, 5) and sys.version_info != (3, 6):  # type: ignore
-    if platform.python_implementation() != "PyPy":
-        additional_mypy_args = {{PizzaCutter.pytest_mypy_args}}
-
-    additional_pycodestyle_args = {{PizzaCutter.pytest_pycodestyle_args}}
-    args[:] = list(set(args + additional_mypy_args + additional_pycodestyle_args))
+def pytest_load_initial_conftests(early_config: pytest.Config, parser: pytest.Parser, args: List[str]) -> None:
+    # PizzaCutter Template can add here additional pytest args
+    additional_pytest_args: List[str] = {{PizzaCutter.pytest.additional_args}}
+    args[:] = list(set(args + additional_pytest_args))

@@ -1,22 +1,17 @@
-"""
-Setuptools entry point.
-see : https://docs.python.org/3.8/distutils/setupscript.html
-"""
+#!/usr/bin/env python3
 
 import codecs
 import os
 import pathlib
 from typing import Any, List, Dict
 
-from setuptools import setup                # type: ignore
+from setuptools import setup    # type: ignore
 from setuptools import find_packages
 
 
 def is_travis_deploy() -> bool:
-    if 'DEPLOY' not in os.environ:
-        return False
-    if os.environ['DEPLOY'].lower() == 'true' and is_tagged_commit():
-        return True
+    if os.getenv('DEPLOY_SDIST', '') or os.getenv('DEPLOY_WHEEL', ''):
+        return is_tagged_commit()
     else:
         return False
 
@@ -34,14 +29,15 @@ def strip_links_from_required(l_required: List[str]) -> List[str]:
     >>> assert strip_links_from_required(required) == ['lib_regexp', 'test']
 
     """
-    l_req_stripped = list()                                        # type: List[str]
+    l_req_stripped: List[str] = list()
     for req in l_required:
         req_stripped = req.split('@')[0].strip()
         l_req_stripped.append(req_stripped)
     return l_req_stripped
 
 
-long_description = '{{PizzaCutter.short_description}}'   # will be overwritten with long_description if exists !
+# will be overwritten with long_description if exists !
+long_description = '{{PizzaCutter.short_description}}'
 path_readme = pathlib.Path(__file__).parent / 'README.rst'
 
 if path_readme.exists():
@@ -58,11 +54,14 @@ def get_requirements_from_file(requirements_filename: str) -> List[str]:
     >>> assert len(get_requirements_from_file('requirements.txt')) > 0
     """
     l_requirements = list()
-    with open(str(pathlib.Path(__file__).parent / requirements_filename), mode='r') as requirements_file:
-        for line in requirements_file:
-            line_data = get_line_data(line)
-            if line_data:
-                l_requirements.append(line_data)
+    try:
+        with open(str(pathlib.Path(__file__).parent / requirements_filename), mode='r') as requirements_file:
+            for line in requirements_file:
+                line_data = get_line_data(line)
+                if line_data:
+                    l_requirements.append(line_data)
+    except FileNotFoundError:
+        pass
     return l_requirements
 
 

@@ -1,16 +1,15 @@
-|travis_build| |license| {{PizzaCutter.|jupyter| }}{{PizzaCutter.|pypi|}}
+{{PizzaCutter.docs.build_badge}}|license| {{PizzaCutter.|jupyter| }}{{PizzaCutter.|pypi|}}{{PizzaCutter.|pypi-downloads|}}{{PizzaCutter.|black|}}
 
 |codecov| |better_code| |cc_maintain| |cc_issues| |cc_coverage| |snyk|
 
 
-.. |travis_build| image:: https://img.shields.io/travis/{{PizzaCutter.repository_slug}}/master.svg
-   :target: https://travis-ci.org/{{PizzaCutter.repository_slug}}
+{{PizzaCutter.docs.build_badge_link}}
 
 .. |license| image:: https://img.shields.io/github/license/webcomics/pywine.svg
    :target: http://en.wikipedia.org/wiki/MIT_License
 
 .. |jupyter| image:: https://mybinder.org/badge_logo.svg
- :target: https://mybinder.org/v2/gh/{{PizzaCutter.repository_slug}}/master?filepath={{PizzaCutter.repository}}.ipynb
+   :target: https://mybinder.org/v2/gh/{{PizzaCutter.repository_slug}}/master?filepath={{PizzaCutter.repository}}.ipynb
 
 .. for the pypi status link note the dashes, not the underscore !
 .. |pypi| image:: https://img.shields.io/pypi/status/{{PizzaCutter.repository_dashed}}?label=PyPI%20Package
@@ -36,3 +35,10 @@
 
 .. |snyk| image:: https://img.shields.io/snyk/vulnerabilities/github/{{PizzaCutter.repository_slug}}
    :target: https://snyk.io/test/github/{{PizzaCutter.repository_slug}}
+
+.. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
+
+.. |pypi-downloads| image:: https://img.shields.io/pypi/dm/{{PizzaCutter.repository_dashed}}
+   :target: https://pypi.org/project/{{PizzaCutter.repository_dashed}}/
+   :alt: PyPI - Downloads
