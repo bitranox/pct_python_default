@@ -1,5 +1,5 @@
           - os: windows-latest
-            python-version: 3.9
+            python-version: "3.10"
             env:
               cEXPORT: "SET"
               BUILD_DOCS: "{{PizzaCutter.gha.windows.build_docs}}"

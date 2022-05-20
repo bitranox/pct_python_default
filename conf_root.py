@@ -281,10 +281,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True,
                                                                    do_setup_install=True, do_setup_install_test=False,
                                                                    do_cli_test=self.travis_linux_do_cli_test))
-        self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9-dev', build_test=True, mypy_test=True,
-                                                                   deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
-                                                                   do_setup_install=True, do_setup_install_test=False,
-                                                                   do_cli_test=self.travis_linux_do_cli_test))
         self.travis_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy3', build_test=True, mypy_test=False,
                                                                    deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
                                                                    do_setup_install=True, do_setup_install_test=False,
@@ -319,7 +315,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9', build_test=True, mypy_test=True,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
                                                                 do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
-        self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.10.0', build_test=True, mypy_test=True,
+        self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.10', build_test=True, mypy_test=True,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True,
                                                                 do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy-3.8', build_test=True, mypy_test=False,
