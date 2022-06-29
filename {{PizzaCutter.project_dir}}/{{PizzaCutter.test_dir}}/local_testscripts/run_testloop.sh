@@ -17,7 +17,7 @@ DO_BLACK="{{PizzaCutter.auto_black_files}}"
 # cleanup on cntrl-c
 trap cleanup EXIT
 
-# install dependencies
+# install dependencies which needed on local python, like venv
 install_dependencies
 
 function pytest_loop {

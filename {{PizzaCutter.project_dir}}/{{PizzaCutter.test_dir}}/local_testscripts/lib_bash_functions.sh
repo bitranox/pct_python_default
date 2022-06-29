@@ -63,6 +63,7 @@ function clean_caches() {
 }
 
 function install_virtualenv_debian() {
+  # installs the debian python3-virtualenv package
   if ! is_package_installed python3-virtualenv; then
     banner "python3-virtualenv is not installed, I will install it for You"
     wait_for_enter
@@ -75,15 +76,16 @@ function install_test_requirements() {
   clr_green "installing/updating pip, setuptools, wheel"
   sudo chmod -R 0777 ~/.eggs # make already installed eggs accessible, just in case they were installed as root
 
-  python3 -m pip install --upgrade pip
-  python3 -m pip install --upgrade setuptools
-  python3 -m pip install --upgrade wheel
+  /opt/python3/bin/python3 -m pip install --upgrade pip
+  /opt/python3/bin/python3 -m pip install --upgrade setuptools
+  /opt/python3/bin/python3 -m pip install --upgrade wheel
   # this we need for local testscripts
-  python3 -m pip install --upgrade click
+  /opt/python3/bin/python3 -m pip install --upgrade click
+  /opt/python3/bin/python3 -m pip install --upgrade black
 
   if test -f "${project_root_dir}/requirements_test.txt"; then
     clr_green "installing/updating test requirements from \"requirements_test.txt\""
-    python3 -m pip install --upgrade -r "${project_root_dir}/requirements_test.txt"
+    /opt/python3/bin/python3 -m pip install --upgrade -r "${project_root_dir}/requirements_test.txt"
   else
     clr_red "requirements_test.txt not found"
   fi
@@ -122,7 +124,7 @@ function cleanup() {
 function run_black() {
   # run black for *.py files
   my_banner "running black with settings from ${project_root_dir}/pyproject.toml"
-  if ! python3 -m black "${project_root_dir}"/**/*.py; then
+  if ! /opt/python3/bin/python3 -m black "${project_root_dir}"/**/*.py; then
     my_banner_warning "black ERROR"
     beep
     sleep "${sleeptime_on_error}"
@@ -134,7 +136,7 @@ function run_black() {
 function run_flake8_tests() {
   # run flake8, settings from setup.cfg
   my_banner "running flake8 with settings from ${project_root_dir}/setup.cfg"
-  if ! python3 -m flake8 --append-config="${project_root_dir}/setup.cfg" "$@" "${project_root_dir}"; then
+  if ! /opt/python3/bin/python3 -m flake8 --append-config="${project_root_dir}/setup.cfg" "$@" "${project_root_dir}"; then
     my_banner_warning "flake8 ERROR"
     beep
     sleep "${sleeptime_on_error}"
@@ -145,7 +147,7 @@ function run_flake8_tests() {
 
 function run_mypy_tests() {
   my_banner "mypy tests"
-  if ! python3 -m mypy "${project_root_dir}" {{PizzaCutter.testscript.mypy_options}}; then
+  if ! /opt/python3/bin/python3 -m mypy "${project_root_dir}" {{PizzaCutter.testscript.mypy_options}}; then
     my_banner_warning "mypy tests ERROR"
     beep
     sleep "${sleeptime_on_error}"
@@ -157,7 +159,7 @@ function run_mypy_tests() {
 function run_pytest() {
   # run pytest, accepts additional pytest parameters like --disable-warnings and so on
   my_banner "running pytest with settings from pytest.ini, mypy.ini and conftest.py"
-  if ! python3 -m pytest "${project_root_dir}" "$@" {{PizzaCutter.testscript.pytest_coverage_option}}; then
+  if ! /opt/python3/bin/python3 -m pytest "${project_root_dir}" "$@" {{PizzaCutter.testscript.pytest_coverage_option}}; then
     my_banner_warning "pytest ERROR"
     beep
     sleep "${sleeptime_on_error}"
@@ -167,6 +169,7 @@ function run_pytest() {
 
 
 function install_pip_requirements_venv() {
+  # install the requirements in the virtual environment
   if test -f "${project_root_dir}/requirements.txt on virtual environment"; then
     my_banner "pip install -r requirements.txt"
     install_clean_virtual_environment
