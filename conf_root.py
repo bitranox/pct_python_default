@@ -1098,7 +1098,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         else:
             (self.path_package_dir / 'py.typed').unlink(missing_ok=True)
 
-
         # create documentation
         import rst_include
 
