@@ -74,8 +74,7 @@ jobs:
           # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-software
           # https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#available-versions-of-python-and-pypy
 
-
-  {{PizzaCutter.gha_windows_addon}}{{PizzaCutter.option.delete_line_if_empty}}
+{{PizzaCutter.gha_windows_addon}}{{PizzaCutter.option.delete_line_if_empty}}
 {{PizzaCutter.gha.linux.tests}}{{PizzaCutter.option.delete_line_if_empty}}
 {{PizzaCutter.gha_osx_addon}}{{PizzaCutter.option.delete_line_if_empty}}
 {{PizzaCutter.gha_wine_addon}}{{PizzaCutter.option.delete_line_if_empty}}
