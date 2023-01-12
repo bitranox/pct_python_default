@@ -303,21 +303,26 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.gha_services: str = ''
         self.gha_linux_do_cli_test = True
         self.gha_linux_test_matrix: List[TravisLinuxTestMatrix] = list()
-        self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.6', build_test=True, mypy_test=True,
-                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
-                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
                                                                 do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
+
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
                                                                 do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
+
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.9', build_test=True, mypy_test=True,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
                                                                 do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
+
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.10', build_test=True, mypy_test=True,
+                                                                deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                                do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
+
+        self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='3.11', build_test=True, mypy_test=True,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True,
                                                                 do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
+
         self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy-3.8', build_test=True, mypy_test=False,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
                                                                 do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
@@ -343,7 +348,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.setup_included_files: List[str] = list()
         # included_files.append('some_text_file.txt')
         # minimal python version required - also used in .docs
-        self.setup_minimal_python_version_required = '3.6.0'
+        self.setup_minimal_python_version_required = '3.7.0'
         # if can run from a zip file - see : https://setuptools.readthedocs.io/en/latest/setuptools.html#setting-the-zip-safe-flag
         self.setup_zip_safe = False
 
@@ -353,9 +358,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                   'Natural Language :: English',
                                   'Operating System :: OS Independent',
                                   'Programming Language :: Python',
-                                  'Programming Language :: Python :: 3.6',
                                   'Programming Language :: Python :: 3.7',
                                   'Programming Language :: Python :: 3.8',
+                                  'Programming Language :: Python :: 3.9',
+                                  'Programming Language :: Python :: 3.10',
+                                  'Programming Language :: Python :: 3.11',
                                   'Programming Language :: Python :: pypy3',
                                   'Topic :: Software Development :: Libraries :: Python Modules']
 

@@ -1,6 +1,6 @@
 {{PizzaCutter.docs.build_badge}}|license| {{PizzaCutter.|jupyter| }}{{PizzaCutter.|pypi|}}{{PizzaCutter.|pypi-downloads|}}{{PizzaCutter.|black|}}
 
-|codecov| |better_code| |cc_maintain| |cc_issues| |cc_coverage| |snyk|
+|codecov| |cc_maintain| |cc_issues| |cc_coverage| |snyk|
 
 
 {{PizzaCutter.docs.build_badge_link}}
@@ -17,9 +17,6 @@
 
 .. |codecov| image:: https://img.shields.io/codecov/c/github/{{PizzaCutter.repository_slug}}
    :target: https://codecov.io/gh/{{PizzaCutter.repository_slug}}
-
-.. |better_code| image:: https://bettercodehub.com/edge/badge/{{PizzaCutter.repository_slug}}?branch=master
-   :target: https://bettercodehub.com/results/{{PizzaCutter.repository_slug}}
 
 .. |cc_maintain| image:: https://img.shields.io/codeclimate/maintainability-percentage/{{PizzaCutter.repository_slug}}?label=CC%20maintainability
    :target: https://codeclimate.com/github/{{PizzaCutter.repository_slug}}/maintainability
