@@ -323,7 +323,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True,
                                                                 do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
-        self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy-3.8', build_test=True, mypy_test=False,
+        self.gha_linux_test_matrix.append(TravisLinuxTestMatrix(arch='amd64', python_version='pypy-3.9', build_test=True, mypy_test=False,
                                                                 deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
                                                                 do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
 
