@@ -7,6 +7,15 @@ Changelog
 
 please check `SemVer <https://semver.org/>`_ for more information on versioning
 
+v1.0.2
+---------
+2023-01-13:
+    - update github actions : checkout@v3 and setup-python@v4
+    - remove "better code" badges
+    - remove python 3.6 tests
+    - add python 3.11 tests
+    - update to pypy 3.9 tests
+
 1.0.1b
 -------
 work in progress
