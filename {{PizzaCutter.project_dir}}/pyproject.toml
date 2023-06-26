@@ -1,6 +1,7 @@
 
 [tool.black]
 line-length = {{PizzaCutter.black_line_length}}
+#You should include all Python versions that you want your code to run under
 target-version = {{PizzaCutter.black_target_versions}}
 # Note that you have to use single-quoted strings in TOML for regular expressions
 include = '{{PizzaCutter.black_include_regexp}}'

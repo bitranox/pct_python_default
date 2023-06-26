@@ -148,11 +148,13 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # #########################################################
         self.black_auto_in_local_testscript: bool = True
         self.black_show_badge: bool = self.black_auto_in_local_testscript
-        self.requirements_test.append('black ; platform_python_implementation != "PyPy"')
-        self.requirements_test.append('black==19.3b0 ; platform_python_implementation == "PyPy"')
+        # use special version of black for pypy - maybe not needed anymore
+        # self.requirements_test.append('black ; platform_python_implementation != "PyPy"')
+        # self.requirements_test.append('black==19.3b0 ; platform_python_implementation == "PyPy"')
+        self.requirements_test.append('black')
         self.black_line_length: int = 88
-        # put the lowest version in use here, so it will be compatible with later versions
-        self.black_target_versions: List[str] = ['py36']
+        # You should include all Python versions that you want your code to run under
+        self.black_target_versions: List[str] = ['py37', 'py38', 'py39', 'py310', 'py311']
         self.black_include_regexp: str = r'\.pyi?$'
         self.black_exclude_regexp: str = r'/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist)/'
 
