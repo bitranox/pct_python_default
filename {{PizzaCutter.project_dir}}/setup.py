@@ -9,7 +9,7 @@ from setuptools import setup    # type: ignore
 from setuptools import find_packages
 
 
-def is_travis_deploy() -> bool:
+def is_deploy() -> bool:
     if os.getenv('DEPLOY_SDIST', '') or os.getenv('DEPLOY_WHEEL', ''):
         return is_tagged_commit()
     else:
@@ -77,7 +77,7 @@ install_requires = get_requirements_from_file('requirements.txt')
 setup_requires = list(set(tests_require + install_requires))
 
 # for deploy on pypi we must not rely on imports from github
-if is_travis_deploy() and is_tagged_commit():
+if is_deploy() and is_tagged_commit():
     setup_requires = strip_links_from_required(setup_requires)
     tests_require = strip_links_from_required(tests_require)
     install_requires = strip_links_from_required(install_requires)

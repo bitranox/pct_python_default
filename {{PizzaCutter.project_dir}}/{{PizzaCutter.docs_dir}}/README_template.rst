@@ -11,7 +11,7 @@ Version {{PizzaCutter.version}} as of {{PizzaCutter.date}} see `Changelog`_
 
 ----
 
-automated tests, Travis Matrix, Documentation, Badges, etc. are managed with `PizzaCutter <https://github
+automated tests, Github Actions, Documentation, Badges, etc. are managed with `PizzaCutter <https://github
 .com/bitranox/PizzaCutter>`_ (cookiecutter on steroids)
 
 Python version required: {{PizzaCutter.docs.python_required}} or newer
