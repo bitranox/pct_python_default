@@ -3,8 +3,23 @@ requires = {{PizzaCutter.pyproject.build_system.requires}}
 build-backend = "{{PizzaCutter.pyproject.build_system.backend}}"
 
 [project]
+# see: https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
 name = "{{PizzaCutter.pyproject.project.name}}"
 authors = {{PizzaCutter.pyproject.project.authors}}
+description = "{{PizzaCutter.pyproject.project.description}}"
+readme = {file = ["README.rst"], content-type = "text/x-rst"}
+requires-python = "{{PizzaCutter.pyproject.project.requires_python}}"
+keywords = {{PizzaCutter.pyproject.project.keywords}}
+license = {{PizzaCutter.pyproject.project.licence}}
+classifiers = {{PizzaCutter.pyproject.project.classifiers}}
+# dependencies - former setup.cfg "install_requires"
+# see: https://setuptools.pypa.io/en/latest/userguide/dependency_management.html
+dependencies = {{PizzaCutter.pyproject.project.dependencies}}
+version = "{{PizzaCutter.pyproject.project.version}}"
+
+[project.optional-dependencies]
+test = {{PizzaCutter.pyproject.optional_dependencies.test}}
+
 
 [tool.black]
 line-length = {{PizzaCutter.black_line_length}}

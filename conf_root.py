@@ -4,9 +4,10 @@ import logging
 import pathlib
 import subprocess
 import sys
-import toml
 from typing import Dict, List, Optional
 
+# ext
+import toml     # noqa
 
 # own
 import lib_log_utils
@@ -143,14 +144,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.flake8_max_line_length: int = 88
         self.flake8_max_complexity: int = 10
         self.flake8_exclude: List[str] = self.common_excludes
-
-        # #########################################################
-        # ### pyproject.toml build-system
-        # #########################################################
-        self.pyproject_build_system_requires: List[str] = ["setuptools", "setuptools-scm"]
-        self.pyproject_build_system_backend: str = 'setuptools.build_meta'
-        self.pyproject_project_name: str = self.project_name
-        self.pyproject_authors: List[Dict[str, str]] = [{self.author: self.author_email}]
 
         # #########################################################
         # ### pyproject.toml black settings
@@ -314,6 +307,28 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                   'Programming Language :: Python :: pypy3',
                                   'Topic :: Software Development :: Libraries :: Python Modules']
 
+        # #########################################################
+        # ### pyproject.toml build-system
+        # #########################################################
+        self.pyproject_build_system_requires: List[str] = ["setuptools", "setuptools-scm"]
+        self.pyproject_build_system_backend: str = 'setuptools.build_meta'
+        self.pyproject_project_name: str = self.project_name
+        self.pyproject_authors: List[Dict[str, str]] = [{'name': self.author, 'email': self.author_email}]
+        self.pyproject_description: str = self.short_description
+        self.pyproject_requires_python: str = f'>={self.setup_minimal_python_version_required}'
+        # A list of additional keywords, separated by commas, to be used to assist searching for the distribution in a larger catalog.
+        self.pyproject_keywords: List[str] = list()
+        self.pyproject_licence: Dict[str, str] = {'text': 'MIT'}
+        self.pyproject_classifiers: List[str] = self.setup_classifiers
+        # dependencies - former setup.cfg "install_requires"
+        # https://setuptools.pypa.io/en/latest/userguide/dependency_management.html
+        self.set_path_project_dir()
+        path_requirements = self.path_project_dir / 'requirements.txt'
+        self.pyproject_dependencies: List[str] = get_requirements_from_file(path_requirements)
+        self.pyproject_version: str = self.version
+        path_test_requirements = self.path_project_dir / 'requirements_test.txt'
+        self.pyproject_optional_dependencies_test: List[str] = get_requirements_from_file(path_test_requirements)
+
         self.set_defaults()
         self.set_patterns()
 
@@ -341,7 +356,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.init_config_name = self.package_name
         # the path of the package dir
         self.path_package_dir = self.pizza_cutter_path_target_dir / self.project_dir / self.package_dir
-        self.path_project_dir = self.pizza_cutter_path_target_dir / self.project_dir
+        self.set_path_project_dir()
 
         if self.flake8_do_tests_in_local_testscript or self.flake8_do_tests_in_gha:
             self.requirements_test.append('flake8')
@@ -371,6 +386,9 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         else:
             self.requirements_test.remove('pytest')
             self.requirements_test.append('pytest-runner')
+
+    def set_path_project_dir(self):
+        self.path_project_dir = self.pizza_cutter_path_target_dir / self.project_dir
 
     # ##########################################################################################################################################################
     # replacement patterns
@@ -541,8 +559,19 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
     def setup_pyproject_project(self) -> None:
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.name}}'] = self.pyproject_project_name
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.authors}}'] = convert_list_of_dict_to_toml(self.pyproject_authors)
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.description}}'] = self.pyproject_description
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.requires_python}}'] = self.pyproject_requires_python
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.keywords}}'] = convert_list_to_toml(self.pyproject_keywords)
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.licence}}'] = convert_dict_to_toml(self.pyproject_licence)
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.classifiers}}'] = convert_list_to_toml(self.pyproject_classifiers)
+        # dependencies - former setup.cfg "install_requires"
+        # https://setuptools.pypa.io/en/latest/userguide/dependency_management.html
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.dependencies}}'] = convert_list_to_toml(self.pyproject_dependencies)
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.version}}'] = self.pyproject_version
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.optional_dependencies.test}}'] = convert_list_to_toml(self.pyproject_optional_dependencies_test)
 
     # ############################################################################
+
     # pytest settings
     # ############################################################################
     def setup_pytest(self):
@@ -1049,31 +1078,66 @@ def remove_from_list(a_list, item) -> None:
         pass
 
 
+def convert_list_to_toml(l_data: List[str], quoting_char: str = '"') -> str:
+    """
+    >>> convert_list_to_toml(['a', 'b', 'c'])
+    '[\\n    "a",\\n    "b",\\n    "c",\\n]'
+    """
+    my_str = "[\n"
+    for str_data in l_data:
+        my_str = my_str + f'    {quoting_char}{str_data}{quoting_char},\n'
+    my_str = my_str + "]"
+    return my_str
+
+
 def convert_list_of_dict_to_toml(ldict_data: List[Dict[str, str]]) -> str:
     """
     >>> convert_list_of_dict_to_toml([{'a':'1', 'b':'2'}])
-    '[{a = "1", b = "2"}]'
+    '[\\n    {a = "1", b = "2"},\\n]'
     >>> convert_list_of_dict_to_toml([{"a":"1", "b":"2"}])
-    '[{a = "1", b = "2"}]'
+    '[\\n    {a = "1", b = "2"},\\n]'
     >>> convert_list_of_dict_to_toml([{"a":"1", "b":"2"}, {"c":"3", "d":"3"}])
-    '[{a = "1", b = "2"}, {c = "3", d = "3"}]'
-
+    '[\\n    {a = "1", b = "2"},\\n    {c = "3", d = "3"},\\n]'
     """
-
-    my_list: List[str] = list()
+    my_list = list()
     for dict_data in ldict_data:
         my_list.append(convert_dict_to_toml(dict_data))
-    return str(my_list).replace('\'', '')
+    return convert_list_to_toml(l_data=my_list, quoting_char='')
 
 
 def convert_dict_to_toml(dict_data: Dict[str, str]) -> str:
     """
     >>> convert_dict_to_toml({'a':'1', 'b':'2'})
     '{a = "1", b = "2"}'
-
     """
     my_str = toml.dumps(dict_data).replace('\n', ', ').strip().rstrip(',')
     return f'{{{my_str}}}'
+
+
+def get_requirements_from_file(path_requirements: pathlib.Path) -> List[str]:
+    l_requirements = list()
+    try:
+        with open(str(path_requirements), mode="r") as requirements_file:
+            for line in requirements_file:
+                line_data = get_line_data(line)
+                if line_data:
+                    l_requirements.append(line_data)
+    except FileNotFoundError:
+        pass
+    return l_requirements
+
+
+def get_line_data(line: str) -> str:
+    """
+    >>> get_line_data('# comment')
+    ''
+    >>> get_line_data('test # comment')
+    'test'
+    """
+    line = line.strip()
+    if "#" in line:
+        line = line.split("#", 1)[0].strip()
+    return line
 
 # #############################################################################################################################################################
 # CLI Interface
