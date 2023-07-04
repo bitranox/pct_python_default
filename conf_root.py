@@ -142,7 +142,13 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.flake8_exclude: List[str] = self.common_excludes
 
         # #########################################################
-        # ### black settings
+        # ### pyproject.toml build-system
+        # #########################################################
+        self.pyproject_build_system_requires: List[str] = ["setuptools", "setuptools-scm"]
+        self.pyproject_build_system_backend: str = 'setuptools.build_meta'
+
+        # #########################################################
+        # ### pyproject.toml black settings
         # #########################################################
         self.black_auto_in_local_testscript: bool = True
         self.black_show_badge: bool = self.black_auto_in_local_testscript
@@ -517,6 +523,14 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.setup_mypy()
         self.setup_black()
         self.setup_pytest()
+        self.setup_pyproject_build_system()
+
+    # ############################################################################
+    # pyproject build-system
+    # ############################################################################
+    def setup_pyproject_build_system(self) -> None:
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.build_system.requires}}'] = str(self.pyproject_build_system_requires)
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.build_system.backend}}'] = self.pyproject_build_system_backend
 
     # ############################################################################
     # pytest settings
