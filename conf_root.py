@@ -4,8 +4,11 @@ import logging
 import pathlib
 import subprocess
 import sys
-from typing import List, Optional
+import toml
+from typing import Dict, List, Optional
 
+
+# own
 import lib_log_utils
 from pizzacutter import PizzaCutterConfigBase
 from pizzacutter import find_version_number_in_file
@@ -146,6 +149,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # #########################################################
         self.pyproject_build_system_requires: List[str] = ["setuptools", "setuptools-scm"]
         self.pyproject_build_system_backend: str = 'setuptools.build_meta'
+        self.pyproject_project_name: str = self.project_name
+        self.pyproject_authors: List[Dict[str, str]] = [{self.author: self.author_email}]
 
         # #########################################################
         # ### pyproject.toml black settings
@@ -524,6 +529,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.setup_black()
         self.setup_pytest()
         self.setup_pyproject_build_system()
+        self.setup_pyproject_project()
 
     # ############################################################################
     # pyproject build-system
@@ -531,6 +537,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
     def setup_pyproject_build_system(self) -> None:
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.build_system.requires}}'] = str(self.pyproject_build_system_requires)
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.build_system.backend}}'] = self.pyproject_build_system_backend
+
+    def setup_pyproject_project(self) -> None:
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.name}}'] = self.pyproject_project_name
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.authors}}'] = convert_list_of_dict_to_toml(self.pyproject_authors)
 
     # ############################################################################
     # pytest settings
@@ -1037,6 +1047,33 @@ def remove_from_list(a_list, item) -> None:
         a_list.remove(item)
     except ValueError:
         pass
+
+
+def convert_list_of_dict_to_toml(ldict_data: List[Dict[str, str]]) -> str:
+    """
+    >>> convert_list_of_dict_to_toml([{'a':'1', 'b':'2'}])
+    '[{a = "1", b = "2"}]'
+    >>> convert_list_of_dict_to_toml([{"a":"1", "b":"2"}])
+    '[{a = "1", b = "2"}]'
+    >>> convert_list_of_dict_to_toml([{"a":"1", "b":"2"}, {"c":"3", "d":"3"}])
+    '[{a = "1", b = "2"}, {c = "3", d = "3"}]'
+
+    """
+
+    my_list: List[str] = list()
+    for dict_data in ldict_data:
+        my_list.append(convert_dict_to_toml(dict_data))
+    return str(my_list).replace('\'', '')
+
+
+def convert_dict_to_toml(dict_data: Dict[str, str]) -> str:
+    """
+    >>> convert_dict_to_toml({'a':'1', 'b':'2'})
+    '{a = "1", b = "2"}'
+
+    """
+    my_str = toml.dumps(dict_data).replace('\n', ', ').strip().rstrip(',')
+    return f'{{{my_str}}}'
 
 # #############################################################################################################################################################
 # CLI Interface

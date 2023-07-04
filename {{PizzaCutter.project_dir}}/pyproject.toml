@@ -1,6 +1,10 @@
 [build-system]
 requires = {{PizzaCutter.pyproject.build_system.requires}}
-build-backend = '{{PizzaCutter.pyproject.build_system.backend}}'
+build-backend = "{{PizzaCutter.pyproject.build_system.backend}}"
+
+[project]
+name = "{{PizzaCutter.pyproject.project.name}}"
+authors = {{PizzaCutter.pyproject.project.authors}}
 
 [tool.black]
 line-length = {{PizzaCutter.black_line_length}}
