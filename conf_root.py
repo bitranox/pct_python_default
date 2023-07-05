@@ -238,19 +238,19 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.gha_linux_test_matrix: List[LinuxTestMatrix] = list()
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
                                                           build=True, build_docs=False,
-                                                          do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
+                                                          do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
                                                           build=True, build_docs=False,
-                                                          do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
+                                                          do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.9', build_test=True, mypy_test=True,
                                                           build=True, build_docs=False,
-                                                          do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
+                                                          do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.10', build_test=True, mypy_test=True,
                                                           build=True, build_docs=False,
-                                                          do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
+                                                          do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.11', build_test=True, mypy_test=True,
                                                           build=True, build_docs=True,
@@ -258,7 +258,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
 
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='pypy-3.9', build_test=True, mypy_test=False,
                                                           build=True, build_docs=False,
-                                                          do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
+                                                          do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
         # ### .docs Settings
         # if to show badge for jupyter
