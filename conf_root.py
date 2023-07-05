@@ -380,13 +380,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         else:
             self.requirements_test.remove('codecov')
 
-        if self.pytest_do_local_testscript or self.pytest_do_local_testscript:
-            self.requirements_test.append('pytest')
-            self.requirements_test.append('pytest-runner')
-        else:
-            self.requirements_test.remove('pytest')
-            self.requirements_test.append('pytest-runner')
-
+        self.requirements_test.append('pytest')
+        self.requirements_test.append('pytest-runner')
         self.requirements_test.append('readme_renderer')
         self.requirements_test.append('twine')
         self.requirements_test.append('wheel')
