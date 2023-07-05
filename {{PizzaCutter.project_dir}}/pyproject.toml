@@ -20,6 +20,7 @@ version = "{{PizzaCutter.pyproject.project.version}}"
 [project.optional-dependencies]
 test = {{PizzaCutter.pyproject.optional_dependencies.test}}
 
+{{PizzaCutter.pyproject.scripts}}{{PizzaCutter.option.delete_line_if_empty}}
 
 [tool.black]
 line-length = {{PizzaCutter.black_line_length}}

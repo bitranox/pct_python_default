@@ -459,6 +459,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # we ned to have a function main_commandline in module module_name - see examples
         self.setup_entry_points = {'console_scripts': [f'{self.shell_command} = {self.package_dir}.{self.cli_module}:{self.cli_method}']}
 
+        ''' 
+        [project.entry-points."console_scripts"]
+            f'{self.shell_command} = f"{self.package_dir}.{self.cli_module}:{self.cli_method}"
+        '''
+
         if self.is_typed_package:
             self.setup_included_files.append('py.typed')
             self.setup_included_files.append('*.pyi')
@@ -569,8 +574,13 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.version}}'] = self.pyproject_version
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.optional_dependencies.test}}'] = convert_list_to_toml(self.pyproject_optional_dependencies_test)
 
-    # ############################################################################
+        if self.create_cli_file:
+            pyproject_scripts = f'[project.scripts]\n    {self.shell_command} = "{self.package_dir}.{self.cli_module}:{self.cli_method}"'
+        else:
+            pyproject_scripts = ''
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.scripts}}'] = pyproject_scripts
 
+    # ############################################################################
     # pytest settings
     # ############################################################################
     def setup_pytest(self):
