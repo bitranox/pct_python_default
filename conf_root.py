@@ -387,6 +387,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             self.requirements_test.remove('pytest')
             self.requirements_test.append('pytest-runner')
 
+        self.requirements_test.append('readme_renderer')
+        self.requirements_test.append('twine')
+        self.requirements_test.append('wheel')
+
     def set_path_project_dir(self):
         self.path_project_dir = self.pizza_cutter_path_target_dir / self.project_dir
 
