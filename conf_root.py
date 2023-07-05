@@ -375,8 +375,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.requirements_test.append('pytest')
         self.requirements_test.append('pytest-runner')
         self.requirements_test.append('readme_renderer')
-        self.requirements_test.append('twine')
-        self.requirements_test.append('wheel')
+        # self.requirements_test.append('twine')
+        # self.requirements_test.append('wheel')
 
     def set_path_project_dir(self):
         self.path_project_dir = self.pizza_cutter_path_target_dir / self.project_dir
@@ -565,6 +565,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.dependencies}}'] = convert_list_to_toml(self.pyproject_dependencies)
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.version}}'] = self.pyproject_version
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.optional_dependencies.test}}'] = convert_list_to_toml(self.pyproject_optional_dependencies_test)
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.zip_safe}}'] = str(self.setup_zip_safe).lower()
+        pyproject_package_data: str = f'[tool.setuptools.package-data]\n{self.package_name} = {convert_list_to_toml(self.setup_included_files)}'
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.package_data}}'] = pyproject_package_data
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.url}}'] = str(self.url)
+
 
         if self.create_cli_file:
             pyproject_scripts = f'[project.scripts]\n    {self.shell_command} = "{self.package_dir}.{self.cli_module}:{self.cli_method}"'
