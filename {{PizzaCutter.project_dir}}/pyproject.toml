@@ -39,3 +39,17 @@ target-version = {{PizzaCutter.black_target_versions}}
 # Note that you have to use single-quoted strings in TOML for regular expressions
 include = '{{PizzaCutter.black_include_regexp}}'
 exclude = '{{PizzaCutter.black_exclude_regexp}}'
+
+[tool.mypy]
+verbosity=0
+warn_unused_configs = true
+ignore_missing_imports = true
+no_implicit_optional = true
+no_strict_optional = true
+show_error_context = true
+
+[tool.pytest.ini_options]
+addopts = "-vvl --doctest-modules"
+doctest_optionflags =  "NORMALIZE_WHITESPACE ELLIPSIS ALLOW_UNICODE ALLOW_BYTES IGNORE_EXCEPTION_DETAIL"
+log_cli = true
+log_cli_level = "CRITICAL"
