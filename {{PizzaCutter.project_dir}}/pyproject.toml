@@ -7,7 +7,7 @@ build-backend = "{{PizzaCutter.pyproject.build_system.backend}}"
 name = "{{PizzaCutter.pyproject.project.name}}"
 authors = {{PizzaCutter.pyproject.project.authors}}
 description = "{{PizzaCutter.pyproject.project.description}}"
-readme = {file = ["README.rst"], content-type = "text/x-rst"}
+readme = "README.rst"
 requires-python = "{{PizzaCutter.pyproject.project.requires_python}}"
 keywords = {{PizzaCutter.pyproject.project.keywords}}
 license = {{PizzaCutter.pyproject.project.licence}}
