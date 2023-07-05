@@ -25,6 +25,9 @@ Documentation = "{{PizzaCutter.pyproject.url}}/blob/master/README.rst"
 Repository = "{{PizzaCutter.pyproject.url}}.git"
 Changelog = "{{PizzaCutter.pyproject.url}}/blob/master/CHANGES.rst"
 
+[project.optional-dependencies]
+test = {{PizzaCutter.pyproject.optional_dependencies.test}}
+
 {{PizzaCutter.pyproject.scripts}}{{PizzaCutter.option.delete_line_if_empty}}
 
 {{PizzaCutter.pyproject.package_data}}{{PizzaCutter.option.delete_line_if_empty}}
