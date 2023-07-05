@@ -16,11 +16,13 @@ classifiers = {{PizzaCutter.pyproject.project.classifiers}}
 # see: https://setuptools.pypa.io/en/latest/userguide/dependency_management.html
 dependencies = {{PizzaCutter.pyproject.project.dependencies}}
 version = "{{PizzaCutter.pyproject.project.version}}"
-zip_save = {{PizzaCutter.pyproject.zip_safe}}
-url = "{{PizzaCutter.pyproject.url}}"
+zip-save = {{PizzaCutter.pyproject.zip_safe}}
 
-[project.optional-dependencies]
-test = {{PizzaCutter.pyproject.optional_dependencies.test}}
+[project.urls]
+Homepage = "{{PizzaCutter.pyproject.url}}"
+Documentation = "{{PizzaCutter.pyproject.url}}"
+Repository = "{{PizzaCutter.pyproject.url}}"
+Changelog = "{{PizzaCutter.pyproject.url}}/blob/master/CHANGES.rst"
 
 {{PizzaCutter.pyproject.scripts}}{{PizzaCutter.option.delete_line_if_empty}}
 
