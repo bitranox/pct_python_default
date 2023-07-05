@@ -1082,12 +1082,45 @@ def convert_list_to_toml(l_data: List[str], quoting_char: str = '"') -> str:
     """
     >>> convert_list_to_toml(['a', 'b', 'c'])
     '[\\n    "a",\\n    "b",\\n    "c",\\n]'
+    >>> convert_list_to_toml(['a', 'b', 'c"test"'])
+    '[\\n    "a",\\n    "b",\\n    "c\\'test\\'",\\n]'
+
     """
     my_str = "[\n"
     for str_data in l_data:
-        my_str = my_str + f'    {quoting_char}{str_data}{quoting_char},\n'
+        clean_quotes_str_data = clean_quotes(str_data=str_data, quoting_char=quoting_char)
+        my_str = my_str + f'    {quoting_char}{clean_quotes_str_data}{quoting_char},\n'
     my_str = my_str + "]"
     return my_str
+
+
+def clean_quotes(str_data: str, quoting_char: str) -> str:
+    """
+    Ersetzt <'> mit <"> oder umgekehrt damit keine Kollision mit quoting_char auftritt:
+    >>> assert clean_quotes('test', quoting_char='"') == 'test'
+    >>> assert clean_quotes('test', quoting_char="'") == 'test'
+    >>> assert clean_quotes('test "par"', quoting_char='"') == "test 'par'"
+    >>> assert clean_quotes('test "par"', quoting_char="'") == 'test "par"'
+    >>> assert clean_quotes("test 'par'", quoting_char='"') == "test 'par'"
+    >>> assert clean_quotes("test 'par'", quoting_char="'") == 'test "par"'
+    >>> assert clean_quotes("test 'par'", quoting_char="") == "test 'par'"
+    >>> clean_quotes("test 'par'", quoting_char="x")
+    Traceback (most recent call last):
+        ...
+    NotImplementedError: Quoting Char <x> is not supported
+    """
+    if quoting_char == '"':
+        replacement_char = "'"
+    elif quoting_char == "'":
+        replacement_char = '"'
+    elif quoting_char == "":
+        return str_data
+    else:
+        raise NotImplementedError(f'Quoting Char <{quoting_char}> is not supported')
+
+    if quoting_char in str_data:
+        str_data = str_data.replace(quoting_char, replacement_char)
+    return str_data
 
 
 def convert_list_of_dict_to_toml(ldict_data: List[Dict[str, str]]) -> str:
