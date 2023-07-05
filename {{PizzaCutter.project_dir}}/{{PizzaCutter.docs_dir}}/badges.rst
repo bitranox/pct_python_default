@@ -30,7 +30,7 @@
    :target: https://codeclimate.com/github/{{PizzaCutter.repository_slug}}/test_coverage
    :alt: Code Coverage
 
-.. |snyk| image:: https://img.shields.io/snyk/vulnerabilities/github/{{PizzaCutter.repository_slug}}
+.. |snyk| image:: https://snyk.io/test/github/{{PizzaCutter.repository_slug}}/badge.svg
    :target: https://snyk.io/test/github/{{PizzaCutter.repository_slug}}
 
 .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
