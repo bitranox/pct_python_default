@@ -5,9 +5,8 @@
               cPYTHON: "python3"        # command to launch python interpreter (it's different on macOS, there we need python3)
               cPIP: "python3 -m pip"    # command to launch pip (it's different on macOS, there we need pip3)
               BUILD_DOCS: "{{PizzaCutter.gha.osx.build_docs}}"
-              DEPLOY_SDIST: "{{PizzaCutter.gha.osx.deploy_sdist}}"
-              DEPLOY_WHEEL: "{{PizzaCutter.gha.osx.deploy_wheel}}"
-              DEPLOY_TEST: "{{PizzaCutter.gha.osx.build_test}}"
+              BUILD: "{{PizzaCutter.gha.osx.build}}"
+              BUILD_TEST: "{{PizzaCutter.gha.osx.build_test}}"
               MYPY_DO_TESTS: "{{PizzaCutter.gha.osx.mypy_test}}"
               # Setup tests
               DO_SETUP_INSTALL: "{{PizzaCutter.gha.osx.setup.py.install}}"

@@ -3,9 +3,8 @@
             env:
               cEXPORT: "SET"
               BUILD_DOCS: "{{PizzaCutter.gha.windows.build_docs}}"
-              DEPLOY_SDIST: "{{PizzaCutter.gha.windows.deploy_sdist}}"
-              DEPLOY_WHEEL: "{{PizzaCutter.gha.windows.deploy_wheel}}"
-              DEPLOY_TEST: "{{PizzaCutter.gha.windows.build_test}}"
+              BUILD: "{{PizzaCutter.gha.windows.build}}"
+              BUILD_TEST: "{{PizzaCutter.gha.windows.build_test}}"
               MYPY_DO_TESTS: "{{PizzaCutter.gha.windows.mypy_test}}"
               # Setup tests
               DO_SETUP_INSTALL: "{{PizzaCutter.gha.windows.setup.py.install}}"

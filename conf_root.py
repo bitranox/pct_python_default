@@ -23,10 +23,8 @@ logger.level = logging.INFO
 class LinuxTestMatrix(object):
     def __init__(self, arch: str,
                  python_version: str,
-                 deploy_sdist: bool,
-                 deploy_wheel: bool,
+                 build: bool,
                  build_test: bool,
-                 only_on_tagged_builds: bool,
                  build_docs: bool,
                  mypy_test: bool,
                  do_setup_install: bool,
@@ -35,10 +33,8 @@ class LinuxTestMatrix(object):
                  ):
         self.arch = arch
         self.python_version = python_version
-        self.deploy_sdist = deploy_sdist
-        self.deploy_wheel = deploy_wheel
+        self.build = build
         self.build_test = build_test
-        self.only_on_tagged_builds = only_on_tagged_builds
         self.build_docs = build_docs
         self.mypy_test = mypy_test
         self.do_setup_install = do_setup_install
@@ -219,10 +215,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.gha_wine_tests = False
 
         # ### GHA windows Test Matrix
-        self.gha_windows_matrix_deploy_sdist = False
-        self.gha_windows_matrix_deploy_wheel = False
+        self.gha_windows_matrix_build = False
         self.gha_windows_matrix_build_test = False
-        self.gha_windows_matrix_only_on_tagged_builds = False
         self.gha_windows_matrix_build_docs = False
         self.gha_windows_matrix_mypy_test = True
         self.gha_windows_matrix_setup_install = True
@@ -230,10 +224,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.gha_windows_matrix_cli_test = self.create_cli_file
 
         # ### GHA osx Test Matrix
-        self.gha_osx_matrix_deploy_sdist = True
-        self.gha_osx_matrix_deploy_wheel = True
+        self.gha_osx_matrix_build = True
         self.gha_osx_matrix_build_test = True
-        self.gha_osx_matrix_only_on_tagged_builds = False
         self.gha_osx_matrix_build_docs = False
         self.gha_osx_matrix_mypy_test = True
         self.gha_osx_matrix_setup_install = True
@@ -245,27 +237,27 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.gha_linux_do_cli_test = True
         self.gha_linux_test_matrix: List[LinuxTestMatrix] = list()
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
-                                                          deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                          build=True, build_docs=False,
                                                           do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
 
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
-                                                          deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                          build=True, build_docs=False,
                                                           do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
 
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.9', build_test=True, mypy_test=True,
-                                                          deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                          build=True, build_docs=False,
                                                           do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
 
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.10', build_test=True, mypy_test=True,
-                                                          deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                          build=True, build_docs=False,
                                                           do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
 
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.11', build_test=True, mypy_test=True,
-                                                          deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=True,
+                                                          build=True, build_docs=True,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='pypy-3.9', build_test=True, mypy_test=False,
-                                                          deploy_sdist=True, deploy_wheel=True, only_on_tagged_builds=False, build_docs=False,
+                                                          build=True, build_docs=False,
                                                           do_setup_install=True, do_setup_install_test=False, do_cli_test=self.gha_linux_do_cli_test))
 
         # ### .docs Settings
@@ -713,35 +705,19 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         else:
             l_gha_linux_tests: List[str] = list()
             for matrix_item in self.gha_linux_test_matrix:
-                arch = matrix_item.arch
-
-                if matrix_item.only_on_tagged_builds:
-                    condition = 'tag IS present'
-                else:
-                    condition = 'true'
-                build_docs = matrix_item.build_docs
-                deploy_sdist = matrix_item.deploy_sdist
-                deploy_wheel = matrix_item.deploy_wheel
-                build_test = matrix_item.build_test
-                python_version = matrix_item.python_version
                 mypy_test = matrix_item.mypy_test and self.mypy_do_tests_in_gha
-                do_setup_install = matrix_item.do_setup_install
-                do_setup_install_test = matrix_item.do_setup_install_test
-                do_cli_test = matrix_item.do_cli_test
-
                 gha_linux_matrix_item = \
                     f"""
           - os: ubuntu-latest
-            python-version: "{python_version}"
+            python-version: "{matrix_item.python_version}"
             env:
-              BUILD_DOCS: "{build_docs}"
-              DEPLOY_SDIST: "{deploy_sdist}"
-              DEPLOY_WHEEL: "{deploy_wheel}"
-              DEPLOY_TEST: "{build_test}"
+              BUILD_DOCS: "{matrix_item.build_docs}"
+              BUILD: "{matrix_item.build}"  
+              BUILD_TEST: "{matrix_item.build_test}"
               MYPY_DO_TESTS: "{mypy_test}"
-              DO_SETUP_INSTALL: "{do_setup_install}"
-              DO_SETUP_INSTALL_TEST: "{do_setup_install_test}"
-              DO_CLI_TEST: "{do_cli_test}"
+              DO_SETUP_INSTALL: "{matrix_item.do_setup_install}"
+              DO_SETUP_INSTALL_TEST: "{matrix_item.do_setup_install_test}"
+              DO_CLI_TEST: "{matrix_item.do_cli_test}"
 """
 
                 l_gha_linux_tests.append(gha_linux_matrix_item)
@@ -750,14 +726,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
             self.pizza_cutter_patterns['{{PizzaCutter.gha.services}}'] = self.gha_services
 
     def setup_gha_windows_tests(self) -> None:
-        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.deploy_sdist}}'] = str(self.gha_windows_matrix_deploy_sdist)
-        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.deploy_wheel}}'] = str(self.gha_windows_matrix_deploy_wheel)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.build}}'] = str(self.gha_windows_matrix_build)
         self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.build_test}}'] = str(self.gha_windows_matrix_build_test)
-        if self.gha_windows_matrix_only_on_tagged_builds:
-            condition = 'tag IS present'
-        else:
-            condition = 'true'
-        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.condition}}'] = condition
         self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.build_docs}}'] = str(self.gha_windows_matrix_build_docs)
         self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.mypy_test}}'] = str(self.gha_windows_matrix_mypy_test and self.mypy_do_tests_in_gha)
 
@@ -769,14 +739,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
     # OSX Matrix settings
     # ############################################################################
     def setup_gha_osx_tests(self) -> None:
-        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.deploy_sdist}}'] = str(self.gha_osx_matrix_deploy_sdist)
-        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.deploy_wheel}}'] = str(self.gha_osx_matrix_deploy_wheel)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.build}}'] = str(self.gha_osx_matrix_build)
         self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.build_test}}'] = str(self.gha_osx_matrix_build_test)
-        if self.gha_osx_matrix_only_on_tagged_builds:
-            condition = 'tag IS present'
-        else:
-            condition = 'true'
-        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.condition}}'] = condition
         self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.build_docs}}'] = str(self.gha_osx_matrix_build_docs)
         self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.mypy_test}}'] = str(self.gha_osx_matrix_mypy_test and self.mypy_do_tests_in_gha)
 
