@@ -299,28 +299,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                   'Programming Language :: Python :: Implementation :: PyPy',
                                   'Topic :: Software Development :: Libraries :: Python Modules']
 
-        # #########################################################
-        # ### pyproject.toml build-system
-        # #########################################################
-        self.pyproject_build_system_requires: List[str] = ["setuptools", "setuptools-scm"]
-        self.pyproject_build_system_backend: str = 'setuptools.build_meta'
-        self.pyproject_project_name: str = self.project_name
-        self.pyproject_authors: List[Dict[str, str]] = [{'name': self.author, 'email': self.author_email}]
-        self.pyproject_description: str = self.short_description
-        self.pyproject_requires_python: str = f'>={self.setup_minimal_python_version_required}'
-        # A list of additional keywords, separated by commas, to be used to assist searching for the distribution in a larger catalog.
-        self.pyproject_keywords: List[str] = list()
-        self.pyproject_licence: Dict[str, str] = {'text': 'MIT'}
-        self.pyproject_classifiers: List[str] = self.setup_classifiers
-        # dependencies - former setup.cfg "install_requires"
-        # https://setuptools.pypa.io/en/latest/userguide/dependency_management.html
-        self.set_path_project_dir()
-        path_requirements = self.path_project_dir / 'requirements.txt'
-        self.pyproject_dependencies: List[str] = get_requirements_from_file(path_requirements)
-        self.pyproject_version: str = self.version
-        path_test_requirements = self.path_project_dir / 'requirements_test.txt'
-        self.pyproject_optional_dependencies_test: List[str] = get_requirements_from_file(path_test_requirements)
-
         self.set_defaults()
         self.set_patterns()
 
@@ -375,8 +353,28 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.requirements_test.append('pytest')
         self.requirements_test.append('pytest-runner')
         self.requirements_test.append('readme_renderer')
-        # self.requirements_test.append('twine')
-        # self.requirements_test.append('wheel')
+
+        # #########################################################
+        # ### pyproject.toml build-system
+        # #########################################################
+        self.pyproject_build_system_requires: List[str] = ["setuptools", "setuptools-scm"]
+        self.pyproject_build_system_backend: str = 'setuptools.build_meta'
+        self.pyproject_project_name: str = self.project_name
+        self.pyproject_authors: List[Dict[str, str]] = [{'name': self.author, 'email': self.author_email}]
+        self.pyproject_description: str = self.short_description
+        self.pyproject_requires_python: str = f'>={self.setup_minimal_python_version_required}'
+        # A list of additional keywords, separated by commas, to be used to assist searching for the distribution in a larger catalog.
+        self.pyproject_keywords: List[str] = list()
+        self.pyproject_licence: Dict[str, str] = {'text': 'MIT'}
+        self.pyproject_classifiers: List[str] = self.setup_classifiers
+        # dependencies - former setup.cfg "install_requires"
+        # https://setuptools.pypa.io/en/latest/userguide/dependency_management.html
+        self.set_path_project_dir()
+        path_requirements = self.path_project_dir / 'requirements.txt'
+        self.pyproject_dependencies: List[str] = get_requirements_from_file(path_requirements)
+        self.pyproject_version: str = self.version
+        path_test_requirements = self.path_project_dir / 'requirements_test.txt'
+        self.pyproject_optional_dependencies_test: List[str] = get_requirements_from_file(path_test_requirements)
 
     def set_path_project_dir(self):
         self.path_project_dir = self.pizza_cutter_path_target_dir / self.project_dir
