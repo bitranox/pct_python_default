@@ -26,7 +26,6 @@ v1.0.3
     - remove .travis.yml
     - update black config
     - clean ./tests/test_cli.py
-    - remove python 3.7 tests
 
 
 v1.0.2
