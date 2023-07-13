@@ -7,6 +7,28 @@ Changelog
 
 please check `SemVer <https://semver.org/>`_ for more information on versioning
 
+v1.0.4
+---------
+2023-07-13:
+    - require minimum python 3.8
+    - remove python 3.7 tests
+
+v1.0.3
+---------
+2023-07-13:
+    - introduce PEP517 packaging standard
+    - introduce pyproject.toml build-system
+    - remove mypy.ini
+    - remove pytest.ini
+    - remove setup.cfg
+    - remove setup.py
+    - remove .bettercodehub.yml
+    - remove .travis.yml
+    - update black config
+    - clean ./tests/test_cli.py
+    - remove python 3.7 tests
+
+
 v1.0.2
 ---------
 2023-01-13:

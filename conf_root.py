@@ -236,10 +236,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.gha_services: str = ''
         self.gha_linux_do_cli_test = True
         self.gha_linux_test_matrix: List[LinuxTestMatrix] = list()
-        self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.7', build_test=True, mypy_test=True,
-                                                          build=True, build_docs=False,
-                                                          do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
-
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
                                                           build=True, build_docs=False,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
@@ -281,7 +277,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.setup_included_files: List[str] = list()
         # included_files.append('some_text_file.txt')
         # minimal python version required - also used in .docs
-        self.setup_minimal_python_version_required = '3.7.0'
+        self.setup_minimal_python_version_required = '3.8.0'
         # if can run from a zip file - see : https://setuptools.readthedocs.io/en/latest/setuptools.html#setting-the-zip-safe-flag
         self.setup_zip_safe = False
 
@@ -291,7 +287,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                   'Natural Language :: English',
                                   'Operating System :: OS Independent',
                                   'Programming Language :: Python',
-                                  'Programming Language :: Python :: 3.7',
                                   'Programming Language :: Python :: 3.8',
                                   'Programming Language :: Python :: 3.9',
                                   'Programming Language :: Python :: 3.10',
