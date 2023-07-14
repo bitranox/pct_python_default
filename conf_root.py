@@ -252,7 +252,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                                           build=True, build_docs=True,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
-        self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.x-dev', build_test=True, mypy_test=True,
+        self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.12-dev', build_test=True, mypy_test=True,
                                                           build=True, build_docs=True,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
