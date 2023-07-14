@@ -1,7 +1,5 @@
 {{PizzaCutter.docs.build_badge}}|codeql| |license| {{PizzaCutter.|jupyter| }}{{PizzaCutter.|pypi|}}
-{{PizzaCutter.|pypi-downloads|}}{{PizzaCutter.|black|}}
-
-|codecov| |cc_maintain| |cc_issues| |cc_coverage| |snyk|
+{{PizzaCutter.|pypi-downloads|}}{{PizzaCutter.|black|}} |codecov| |cc_maintain| |cc_issues| |cc_coverage| |snyk|
 
 
 {{PizzaCutter.docs.build_badge_link}}
