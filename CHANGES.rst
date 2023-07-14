@@ -10,6 +10,7 @@ please check `SemVer <https://semver.org/>`_ for more information on versioning
 v1.0.5b
 ---------
 2023-07-14:
+    - add codeql badge
     - move 3rd_party_stubs outside the src directory
     - add pypy 3.10 tests
     - add python 3.12-dev tests

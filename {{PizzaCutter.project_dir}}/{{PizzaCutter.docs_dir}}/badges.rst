@@ -1,9 +1,13 @@
-{{PizzaCutter.docs.build_badge}}|license| {{PizzaCutter.|jupyter| }}{{PizzaCutter.|pypi|}}{{PizzaCutter.|pypi-downloads|}}{{PizzaCutter.|black|}}
+{{PizzaCutter.docs.build_badge}}|codeql| |license| {{PizzaCutter.|jupyter| }}{{PizzaCutter.|pypi|}}
+{{PizzaCutter.|pypi-downloads|}}{{PizzaCutter.|black|}}
 
 |codecov| |cc_maintain| |cc_issues| |cc_coverage| |snyk|
 
 
 {{PizzaCutter.docs.build_badge_link}}
+
+.. |codeql| image:: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/codeql-analysis.yml/badge.svg
+   :target: https://github.com//{{PizzaCutter.repository_slug}}/actions/workflows/codeql-analysis.yml
 
 .. |license| image:: https://img.shields.io/github/license/webcomics/pywine.svg
    :target: http://en.wikipedia.org/wiki/MIT_License
