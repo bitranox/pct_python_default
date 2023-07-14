@@ -47,7 +47,7 @@ jobs:
         # MYPY tests
         MYPY_DO_TESTS: "{{PizzaCutter.gha.mypy_do_tests}}"
         MYPY_OPTIONS: "{{PizzaCutter.gha.mypy_options}}"
-        MYPYPATH: "./3rd_party_stubs"
+        MYPYPATH: "./.3rd_party_stubs"
 
         # coverage
         DO_COVERAGE: "{{PizzaCutter.gha.do_coverage}}"
