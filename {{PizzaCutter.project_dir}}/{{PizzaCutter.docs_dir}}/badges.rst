@@ -6,7 +6,7 @@
 
 {{PizzaCutter.docs.build_badge_link}}
 
-.. |codeql| image:: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/codeql-analysis.yml/badge.svg
+.. |codeql| image:: https://github.com/{{PizzaCutter.repository_slug}}/actions/workflows/codeql-analysis.yml/badge.svg?event=push
    :target: https://github.com//{{PizzaCutter.repository_slug}}/actions/workflows/codeql-analysis.yml
 
 .. |license| image:: https://img.shields.io/github/license/webcomics/pywine.svg
