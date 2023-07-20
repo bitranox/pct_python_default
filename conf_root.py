@@ -305,10 +305,15 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         else:
             self.requirements_test.remove('flake8')
 
+        '''
+        # mypy was not working on pypy some time ago. 
         if self.mypy_options_testscript or self.mypy_do_tests_in_gha:
             self.requirements_test.append('mypy ; platform_python_implementation != "PyPy"')
         else:
             self.requirements_test.remove('mypy ; platform_python_implementation != "PyPy"')
+        '''
+        if self.mypy_options_testscript or self.mypy_do_tests_in_gha:
+            self.requirements_test.append('mypy')
 
         if self.coverage_do_local_testscript or self.coverage_do_gha:
             self.requirements_test.append('pytest-cov')
@@ -375,11 +380,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                                           build=True, build_docs=True,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
-        self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='pypy-3.9', build_test=True, mypy_test=False,
+        self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='pypy-3.9', build_test=True, mypy_test=True,
                                                           build=True, build_docs=False,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
-        self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='pypy-3.10', build_test=True, mypy_test=False,
+        self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='pypy-3.10', build_test=True, mypy_test=True,
                                                           build=True, build_docs=False,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
