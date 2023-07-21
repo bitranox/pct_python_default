@@ -577,17 +577,17 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.authors}}'] = convert_list_of_dict_to_toml(self.pyproject_authors)
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.description}}'] = self.pyproject_description
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.requires_python}}'] = self.pyproject_requires_python
-        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.keywords}}'] = convert_list_to_toml(self.pyproject_keywords)
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.keywords}}'] = convert_list_to_toml(sorted(self.pyproject_keywords))
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.licence}}'] = convert_dict_to_toml(self.pyproject_licence)
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.classifiers}}'] = convert_list_to_toml(self.pyproject_classifiers)
         # dependencies - former setup.cfg "install_requires"
         # https://setuptools.pypa.io/en/latest/userguide/dependency_management.html
-        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.dependencies}}'] = convert_list_to_toml(self.pyproject_dependencies)
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.dependencies}}'] = convert_list_to_toml(sorted(self.pyproject_dependencies))
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.version}}'] = self.pyproject_version
         # self.pizza_cutter_patterns['{{PizzaCutter.pyproject.optional_dependencies.test}}'] = convert_list_to_toml(self.pyproject_optional_dependencies_test)
-        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.optional_dependencies.test}}'] = convert_list_to_toml(list(set(self.requirements_test)))
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.optional_dependencies.test}}'] = convert_list_to_toml(sorted(list(set(self.requirements_test))))
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.zip_safe}}'] = str(self.setup_zip_safe).lower()
-        pyproject_package_data: str = f'[tool.setuptools.package-data]\n{self.package_name} = {convert_list_to_toml(self.setup_included_files)}'
+        pyproject_package_data: str = f'[tool.setuptools.package-data]\n{self.package_name} = {convert_list_to_toml(sorted(self.setup_included_files))}'
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.package_data}}'] = pyproject_package_data
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.url}}'] = str(self.url)
 
