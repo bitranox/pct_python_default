@@ -350,8 +350,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         path_requirements = self.path_project_dir / 'requirements.txt'
         self.pyproject_dependencies: List[str] = get_requirements_from_file(path_requirements)
         self.pyproject_version: str = self.version
-        path_test_requirements = self.path_project_dir / 'requirements_test.txt'
-        self.pyproject_optional_dependencies_test: List[str] = get_requirements_from_file(path_test_requirements)
+
+        # this will be set now directly from self.requirements_test:
+        # path_test_requirements = self.path_project_dir / 'requirements_test.txt'
+        # self.pyproject_optional_dependencies_test: List[str] = get_requirements_from_file(path_test_requirements)
 
         # ### CLI TEST
         self.gha_windows_matrix_cli_test = self.create_cli_file
@@ -556,6 +558,14 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.setup_pyproject_project()
 
     # ############################################################################
+    # requirements_test.txt settings
+    # needs to be called BEFORE setup_pyproject_project
+    # ############################################################################
+    def setup_requirements_test(self):
+        self.requirements_test = sorted(list(set(self.requirements_test)))
+        self.pizza_cutter_patterns['# {{PizzaCutter.requirements_test}}'] = '\n'.join(self.requirements_test)
+
+    # ############################################################################
     # pyproject build-system
     # ############################################################################
     def setup_pyproject_build_system(self) -> None:
@@ -574,12 +584,12 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # https://setuptools.pypa.io/en/latest/userguide/dependency_management.html
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.dependencies}}'] = convert_list_to_toml(self.pyproject_dependencies)
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.project.version}}'] = self.pyproject_version
-        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.optional_dependencies.test}}'] = convert_list_to_toml(self.pyproject_optional_dependencies_test)
+        # self.pizza_cutter_patterns['{{PizzaCutter.pyproject.optional_dependencies.test}}'] = convert_list_to_toml(self.pyproject_optional_dependencies_test)
+        self.pizza_cutter_patterns['{{PizzaCutter.pyproject.optional_dependencies.test}}'] = convert_list_to_toml(list(set(self.requirements_test)))
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.zip_safe}}'] = str(self.setup_zip_safe).lower()
         pyproject_package_data: str = f'[tool.setuptools.package-data]\n{self.package_name} = {convert_list_to_toml(self.setup_included_files)}'
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.package_data}}'] = pyproject_package_data
         self.pizza_cutter_patterns['{{PizzaCutter.pyproject.url}}'] = str(self.url)
-
 
         if self.create_cli_file:
             pyproject_scripts = f'[project.scripts]\n    {self.shell_command} = "{self.package_dir}.{self.cli_module}:{self.cli_method}"'
@@ -597,13 +607,6 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.pytest.collect_ignore}}'] = str(collect_ignores)
         self.pizza_cutter_patterns['{{PizzaCutter.pytest_do_in_local_testscript}}'] = str(self.pytest_do_local_testscript)
         self.pizza_cutter_patterns['{{PizzaCutter.gha.pytest_do_tests}}'] = str(self.pytest_do_gha)
-
-    # ############################################################################
-    # requirements_test.txt settings
-    # ############################################################################
-    def setup_requirements_test(self):
-        self.requirements_test = sorted(list(set(self.requirements_test)))
-        self.pizza_cutter_patterns['# {{PizzaCutter.requirements_test}}'] = '\n'.join(self.requirements_test)
 
     # ############################################################################
     # flake8 settings
