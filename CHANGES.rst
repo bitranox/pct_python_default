@@ -7,6 +7,11 @@ Changelog
 
 please check `SemVer <https://semver.org/>`_ for more information on versioning
 
+v1.0.6
+---------
+2023-10-08:
+    - change codecov badge
+
 v1.0.5
 ---------
 2023-07-14:

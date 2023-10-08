@@ -17,7 +17,10 @@
 .. |pypi| image:: https://img.shields.io/pypi/status/{{PizzaCutter.repository_dashed}}?label=PyPI%20Package
    :target: https://badge.fury.io/py/{{PizzaCutter.repository}}
 
-.. |codecov| image:: https://img.shields.io/codecov/c/github/{{PizzaCutter.repository_slug}}
+.. badge until 2023-10-08:
+.. https://img.shields.io/codecov/c/github/{{PizzaCutter.repository_slug}}
+.. badge from 2023-10-08:
+.. |codecov| image:: https://codecov.io/gh/{{PizzaCutter.repository_slug}}/graph/badge.svg
    :target: https://codecov.io/gh/{{PizzaCutter.repository_slug}}
 
 .. |cc_maintain| image:: https://img.shields.io/codeclimate/maintainability-percentage/{{PizzaCutter.repository_slug}}?label=CC%20maintainability
