@@ -7,6 +7,12 @@ Changelog
 
 please check `SemVer <https://semver.org/>`_ for more information on versioning
 
+
+v1.0.7
+---------
+2023-10-09:
+    - introduce PYPI_UPLOAD_API_TOKEN
+
 v1.0.6
 ---------
 2023-10-08:
