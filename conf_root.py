@@ -160,9 +160,17 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # ### mypy settings
         # #########################################################
 
+        # mypy 1.4.1: Strict mode enables the following flags: --warn-unused-configs, --disallow-any-generics, --disallow-subclassing-any,
+        # --disallow-untyped-calls, --disallow-untyped-defs, --disallow-incomplete-defs, --check-untyped-defs, --disallow-untyped-decorators,
+        # --warn-redundant-casts, --warn-unused-ignores, --warn-return-any, --no-implicit-reexport, --strict-equality, --strict-concatenate
+
         self.mypy_strict_options: List[str] = ['--strict', '--warn-unused-ignores', '--implicit-reexport', '--follow-imports=silent',
                                                '--install-types', '--non-interactive']
-        self.mypy_strict_options_follow_imports: List[str] = ['--strict', '--no-warn-unused-ignores', '--implicit-reexport', '--follow-imports=normal',
+
+        # We exclude now the --implicit-reexport option, which means that the --no-implicit-reexport option is now automatically active,
+        # when the --strict option is enabled.
+        # see : https://justincaustin.com/blog/mypy-tips-and-tricks/
+        self.mypy_strict_options_follow_imports: List[str] = ['--strict', '--no-warn-unused-ignores', '--follow-imports=normal',
                                                               '--ignore-missing-imports', '--install-types', '--non-interactive']
 
         self.mypy_do_tests_in_local_testscript = True

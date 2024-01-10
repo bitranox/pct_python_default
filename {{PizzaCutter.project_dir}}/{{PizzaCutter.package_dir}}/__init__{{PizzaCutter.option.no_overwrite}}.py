@@ -4,7 +4,11 @@ from lib_detect_testenv import *
 if is_testenv_active():
     add_path_to_syspath(__file__)
 
-# put Your imports here
+# put Your imports here. because of mypy --strict --no-implicit-reexport:
+# instead :
+#    from file_a import foo
+# use:
+#    from file_a import foo as foo
 
 
 # __init__conf__ needs to be imported after Your imports, otherwise we would create circular import on the cli script,
