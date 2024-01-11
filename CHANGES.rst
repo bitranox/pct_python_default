@@ -8,6 +8,11 @@ Changelog
 please check `SemVer <https://semver.org/>`_ for more information on versioning
 
 
+v1.0.9
+---------
+2024-01-11:
+    - remove python 3.13-dev test because of "humanfriendly" module
+
 v1.0.8
 ---------
 2024-01-11:
