@@ -8,6 +8,14 @@ Changelog
 please check `SemVer <https://semver.org/>`_ for more information on versioning
 
 
+v1.0.8
+---------
+2024-01-11:
+    - add python 3.13-dev test
+    - add black 3.12 style
+    - set osx version to 3.12
+    - set windows version to 3.12
+
 v1.0.7
 ---------
 2023-10-09:

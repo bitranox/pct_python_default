@@ -152,7 +152,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.requirements_test.append('black')
         self.black_line_length: int = 88
         # You should include all Python versions that you want your code to run under
-        self.black_target_versions: List[str] = ['py37', 'py38', 'py39', 'py310', 'py311']
+        self.black_target_versions: List[str] = ['py38', 'py39', 'py310', 'py311', 'py312']
         self.black_include_regexp: str = r'\.pyi?$'
         self.black_exclude_regexp: str = r'/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist)/'
 
@@ -276,6 +276,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                   'Programming Language :: Python :: 3.9',
                                   'Programming Language :: Python :: 3.10',
                                   'Programming Language :: Python :: 3.11',
+                                  'Programming Language :: Python :: 3.12',
                                   'Programming Language :: Python :: Implementation :: PyPy',
                                   'Topic :: Software Development :: Libraries :: Python Modules']
 
@@ -368,7 +369,18 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.gha_osx_matrix_cli_test = self.create_cli_file
         self.gha_linux_do_cli_test = self.create_cli_file
 
-        # ### Github Actions Linux Test Matrix
+        # ### Github Actions Test Matrix
+        # version see :
+        # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2204-Readme.md
+        # https://github.com/actions/runner-images/blob/main/images/macos/macos-13-Readme.md
+        # https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md
+
+        # set OSX Version at file: {{PizzaCutter.project_dir}}/gha_addons{{PizzaCutter.option.no_copy}}/gha_template_osx_addon.yml
+        # set Windows version at File : {{PizzaCutter.project_dir}}/gha_addons{{PizzaCutter.option.no_copy}}/gha_template_windows_addon.yml
+
+        self.gha_python_version_windows: str = '3.12'
+        self.gha_python_version_osx: str = '3.12'
+
         self.gha_linux_test_matrix: List[LinuxTestMatrix] = list()
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.8', build_test=True, mypy_test=True,
                                                           build=True, build_docs=False,
@@ -386,7 +398,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                                           build=True, build_docs=True,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
-        self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.12-dev', build_test=True, mypy_test=True,
+        self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.12', build_test=True, mypy_test=True,
+                                                          build=True, build_docs=True,
+                                                          do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
+
+        self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.13-dev', build_test=True, mypy_test=True,
                                                           build=True, build_docs=True,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
@@ -760,6 +776,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.setup.py.install}}'] = str(self.gha_windows_matrix_setup_install)
         self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.setup.py.test}}'] = str(self.gha_windows_matrix_setup_install_test)
         self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.cli.test}}'] = str(self.gha_windows_matrix_cli_test)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.windows.python.version}}'] = str(self.gha_python_version_windows)
 
     # ############################################################################
     # OSX Matrix settings
@@ -774,6 +791,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.setup.py.test}}'] = str(self.gha_osx_matrix_setup_install_test)
 
         self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.cli.test}}'] = str(self.gha_osx_matrix_cli_test)
+        self.pizza_cutter_patterns['{{PizzaCutter.gha.osx.python.version}}'] = str(self.gha_python_version_osx)
 
     # ############################################################################
     # test_dir/local_testscripts settings
