@@ -13,7 +13,6 @@ os.environ['PYTEST_IS_RUNNING'] = 'True'  # to be able to detect pytest when run
 path_cli_command = pathlib.Path(__file__).resolve().parent.parent / package_dir / cli_filename
 
 
-
 def call_cli_command(commandline_args: str = '') -> bool:
     command = ' '.join([sys.executable, str(path_cli_command), commandline_args])
     try:
