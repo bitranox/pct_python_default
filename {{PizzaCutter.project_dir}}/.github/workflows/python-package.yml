@@ -66,7 +66,8 @@ jobs:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         # make PyPi API token available in Environment
         PYPI_UPLOAD_API_TOKEN: ${{ secrets.PYPI_UPLOAD_API_TOKEN }}
-
+        # additional Environment Variables:
+{{PizzaCutter.gha_additional_environment_variables}}{{PizzaCutter.option.delete_line_if_empty}}
 
     strategy:
       matrix:

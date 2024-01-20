@@ -241,6 +241,10 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # ### Github Actions Linux Test Matrix
         self.gha_services: str = ''
 
+        # ### additional environment variable to set
+        # ### [{key:'TESTKEY', value:'testvalue'}, {key:'TESTKEY2', value:'testvalue2'}]
+        self.l_dict_additional_env_variable : List[Dict[str, str]] = list()
+
         # ### .docs Settings
         # if to show badge for jupyter
         # create a new jupyter binder at https://mybinder.org/
@@ -741,6 +745,12 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # rst_include (rebuild Readme File)
         self.pizza_cutter_patterns['{{PizzaCutter.gha.rst_include_source}}'] = f'./{self.docs_dir}/README_template.rst'
         self.pizza_cutter_patterns['{{PizzaCutter.gha.rst_include_target}}'] = './README.rst'
+
+        # additional secrets
+        s_additional_env_variable: str = ''
+        for dict_additional_env_variable in self.l_dict_additional_env_variable:
+            s_additional_env_variable += f'        {dict_additional_env_variable["key"]}: {dict_additional_env_variable["value"]}\n'
+        self.pizza_cutter_patterns['{{PizzaCutter.gha_additional_environment_variables}}'] = s_additional_env_variable
 
     # ############################################################################
     # github_actions Linux Matrix settings
