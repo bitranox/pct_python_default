@@ -73,6 +73,26 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
         # ### requirements_test.txt Settings
         self.requirements_test: List[str] = list()
 
+        # ### requirements_test.txt Settings --> 2024-02-20 not used, work in progress
+        self.requirements: List[str] = list()
+
+        # #########################################################
+        # ### security pinnings
+        # #########################################################
+        # modules pinned to specific versions because of security issues
+        # sources : snyk, checkmarx.com
+        # 2024-02-20 not used, work in progress - because requirements.txt is only generated on
+        # creation of the project. this will change in the future.
+
+        self.requirements.append('click')
+        self.requirements.append('toml')
+        self.requirements.append('cli_exit_tools')
+        self.requirements.append('lib_detect_testenv')
+        self.requirements.append('certify>=2024.2.2          # not directly required, pinned to avoid vulnerability CVE-2023-37920')
+        self.requirements.append('pip>=24.0                  # not directly required, pinned to avoid vulnerability CVE-2023-5752')
+        self.requirements.append('uwsgi>=2.0.21              # not directly required, pinned to avoid vulnerability CVE-2023-27522')
+        self.requirements.append('urllib>=2.2.0              # not directly required, pinned to avoid vulnerability CVE-2023-43804, CVE-2023-45803')
+
 
 # ##############################################################################################################################################################
 # Project Configuration - single point for all configuration of the project
