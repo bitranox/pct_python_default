@@ -1,10 +1,9 @@
-- Before You start, its highly recommended to update pip and setup tools:
+- Before You start, its highly recommended to update pip:
 
 
 .. code-block::
 
     python -m pip --upgrade pip
-    python -m pip --upgrade setuptools
 
 
 {{PizzaCutter.docs.include_installation_via_pypi}}
