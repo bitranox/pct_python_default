@@ -62,7 +62,7 @@ jobs:
         RST_INCLUDE_SOURCE: "{{PizzaCutter.gha.rst_include_source}}"
         # the target file for rst_include (rebuild rst file includes)
         RST_INCLUDE_TARGET: "{{PizzaCutter.gha.rst_include_target}}"
-        # make Code Coverage Secret available in Environment
+        # make Code Climate Code Coverage Secret available in Environment
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         # make PyPi API token available in Environment
         PYPI_UPLOAD_API_TOKEN: ${{ secrets.PYPI_UPLOAD_API_TOKEN }}
