@@ -442,6 +442,11 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                                           build=True, build_docs=False,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
+        self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='graalpy-24.1', build_test=True, mypy_test=True,
+                                                          build=True, build_docs=True,
+                                                          do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
+
+
     def set_path_project_dir(self):
         self.path_project_dir = self.pizza_cutter_path_target_dir / self.project_dir
 
