@@ -7,6 +7,10 @@ Changelog
 
 please check `SemVer <https://semver.org/>`_ for more information on versioning
 
+v1.0.10
+---------
+2024-10-01:
+    - add security pinning in requirements.txt
 
 v1.0.9
 ---------
