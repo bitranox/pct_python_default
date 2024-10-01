@@ -422,8 +422,8 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                                           build=True, build_docs=True,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
-        self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.12', build_test=True, mypy_test=True,
-                                                          build=True, build_docs=True,
+        self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='3.12', build_test=False, mypy_test=True,
+                                                          build=False, build_docs=True,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
         """
@@ -442,6 +442,7 @@ class PizzaCutterConfig(PizzaCutterConfigBase):
                                                           build=True, build_docs=False,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
 
+        # build test and build bedingt ein pip upgrade, welches unter graalpy-24.1 nicht funktioniert
         self.gha_linux_test_matrix.append(LinuxTestMatrix(arch='amd64', python_version='graalpy-24.1', build_test=True, mypy_test=True,
                                                           build=True, build_docs=True,
                                                           do_setup_install=True, do_setup_install_test=True, do_cli_test=self.gha_linux_do_cli_test))
