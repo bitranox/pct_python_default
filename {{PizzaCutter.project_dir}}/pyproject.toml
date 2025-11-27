@@ -53,3 +53,15 @@ addopts = "-vvl --doctest-modules"
 doctest_optionflags =  "NORMALIZE_WHITESPACE ELLIPSIS ALLOW_UNICODE ALLOW_BYTES IGNORE_EXCEPTION_DETAIL"
 log_cli = true
 log_cli_level = "CRITICAL"
+
+[tool.pip-audit]
+# Known vulnerabilities to ignore (unfixable or accepted risk)
+# GHSA-4xh5-x5gv-qwph: py library ReDoS (no fix available, low risk)
+# PYSEC-2022-42969: same as above (alias)
+ignore-vulns = 
+[tool.scripts.test]
+# Configuration for scripts/test.py test runner
+pytest-verbosity = "-vv"
+coverage-report-file = "coverage.xml"
+src-path = "src"
+["GHSA-4xh5-x5gv-qwph", "PYSEC-2022-42969"]
