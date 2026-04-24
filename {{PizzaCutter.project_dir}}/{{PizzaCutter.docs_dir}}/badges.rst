@@ -1,5 +1,5 @@
 {{PizzaCutter.docs.build_badge}}|codeql| |license| {{PizzaCutter.|jupyter| }}{{PizzaCutter.|pypi|}}
-{{PizzaCutter.|pypi-downloads|}}{{PizzaCutter.|black|}} |codecov| |cc_maintain| |cc_issues| |cc_coverage| |snyk|
+{{PizzaCutter.|pypi-downloads|}}{{PizzaCutter.|black|}} |codecov| |cc_maintain| |cc_issues| |cc_coverage|
 
 
 {{PizzaCutter.docs.build_badge_link}}
@@ -35,8 +35,6 @@
    :target: https://codeclimate.com/github/{{PizzaCutter.repository_slug}}/test_coverage
    :alt: Code Coverage
 
-.. |snyk| image:: https://snyk.io/test/github/{{PizzaCutter.repository_slug}}/badge.svg
-   :target: https://snyk.io/test/github/{{PizzaCutter.repository_slug}}
 
 .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
